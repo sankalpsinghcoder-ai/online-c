@@ -100,53 +100,72 @@
   <script>
   const startBtn = document.getElementById("start-btn");
   const dosBox = document.getElementById("dos");
-  const hiddenInput = document.getElementById("keyboard-helper");
+
+  // Hidden input for mobile
+  const hiddenInput = document.createElement("input");
+  hiddenInput.type = "text";
+  hiddenInput.id = "keyboard-helper";
+  hiddenInput.autocapitalize = "none";
+  hiddenInput.autocomplete = "off";
+  hiddenInput.autocorrect = "off";
+  hiddenInput.spellcheck = false;
+  hiddenInput.style.position = "absolute";
+  hiddenInput.style.opacity = "0";
+  hiddenInput.style.height = "0";
+  hiddenInput.style.width = "0";
+  hiddenInput.style.border = "none";
+  hiddenInput.style.zIndex = "-1";
+  document.body.appendChild(hiddenInput);
+
   let dosInstance = null;
-  let dosKeys = null;
+  let keyboard = null;
 
   startBtn.addEventListener("click", () => {
     startBtn.style.display = "none";
     dosBox.style.display = "block";
 
-    // Initialize JS-DOS
     Dos(dosBox, {
       url: "turboc.jsdos",
-      zipUrl: "TURBOC3.zip"
-    }).then(dosbox => {
-      dosInstance = dosbox;
-      console.log("Turbo C++ loaded successfully!");
+      zipUrl: "TURBOC3.zip",
+    })
+      .then(async (dosbox) => {
+        dosInstance = dosbox;
+        console.log("Turbo C++ loaded successfully!");
+        const ev = await dosbox.events();
+        keyboard = ev.keyboard;
 
-      // Save reference to the keyboard handler
-      dosbox.events().then(ev => {
-        dosKeys = ev.keyboard;
+        // Run Turbo C
+        dosbox.run("C:\\TURBOC3\\BIN\\TC.EXE");
+
+        // Focus hidden input after load
+        setTimeout(() => hiddenInput.focus(), 2000);
+      })
+      .catch((err) => {
+        console.error("Error loading Turbo C++:", err);
+        alert("Failed to load Turbo C++ emulator. Check console.");
       });
-
-      // Run Turbo C executable
-      dosbox.run("C:\\TURBOC3\\BIN\\TC.EXE");
-
-      // Focus hidden input after DOS loads
-      setTimeout(() => hiddenInput.focus(), 2000);
-    }).catch(err => {
-      console.error("Error loading Turbo C++:", err);
-      alert("Failed to load Turbo C++ emulator. Check console.");
-    });
   });
 
-  // --- MOBILE KEYBOARD FIX ---
-  dosBox.addEventListener("touchstart", () => hiddenInput.focus());
-  dosBox.addEventListener("click", () => hiddenInput.focus());
+  // --- Mobile tap to focus keyboard ---
+  dosBox.addEventListener("touchstart", () => {
+    hiddenInput.focus();
+    if (keyboard) keyboard.focus(); // give emulator keyboard focus too
+  });
+  dosBox.addEventListener("click", () => {
+    hiddenInput.focus();
+    if (keyboard) keyboard.focus();
+  });
 
-  // Send typed input to DOS
-  hiddenInput.addEventListener("input", (e) => {
-    const val = e.target.value;
-    if (val && dosKeys) {
-      for (const char of val) {
-        const code = char.toUpperCase().charCodeAt(0);
-        dosKeys.keyPress(code);
-      }
+  // --- Send typed characters ---
+  hiddenInput.addEventListener("beforeinput", (e) => {
+    if (!keyboard) return;
+    const val = e.data;
+    if (val) {
+      const code = val.toUpperCase().charCodeAt(0);
+      keyboard.keyPress(code);
     }
-    e.target.value = ""; // clear
   });
 </script>
 </body>
 </html>
+
