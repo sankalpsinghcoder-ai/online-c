@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turbo C++ Online</title>
+
+<!-- js-dos v8 styles -->
+<link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
+
+<style>
+  body {
+    background-color: #0b0c10;
+    color: #66fcf1;
+    font-family: Consolas, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    color: #45a29e;
+    margin-bottom: 20px;
+  }
+
+  #dos {
+    width: 800px;
+    height: 600px;
+    border: 3px solid #45a29e;
+    border-radius: 8px;
+    background: black;
+    display: none;
+  }
+
+  #start-btn {
+    background: #45a29e;
+    color: #0b0c10;
+    font-size: 1.1rem;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+
+  #start-btn:hover {
+    background: #66fcf1;
+    transform: scale(1.05);
+  }
+
+  footer {
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: #888;
+  }
+</style>
+</head>
+<body>
+  <h1>Turbo C++ Online Compiler</h1>
+  <h1>Made By Sankalp Singh and powered by js-dos.com | Turbo C++ 3.2</h1>
+  <button id="start-btn">Start Turbo C++</button>
+  <div id="dos"></div>
+
+  <h1>Manual (Coming Soon!)</h1>
+  <footer>Powered by js-dos.com | Turbo C++ 3.2</footer>
+
+  <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
+<script src="https://v8.js-dos.com/latest/emulators/emulators.js"></script>
+
+<script>
+  const startBtn = document.getElementById("start-btn");
+  const dosBox = document.getElementById("dos");
+
+  startBtn.addEventListener("click", () => {
+    // Hide the start button and show DOSBox
+    startBtn.style.display = "none";
+    dosBox.style.display = "block";
+
+    // Initialize JS-DOS
+    Dos(dosBox, {
+      url: "turboc.jsdos", // JS-DOS emulator
+      zipUrl: "TC.zip",
+    }).then((dosbox) => {
+      console.log("Turbo C++ loaded successfully!");
+
+      // Mount your Turbo C folder as virtual C: drive
+      dosbox.mount("/cdrive", "C:\\");
+
+      // Run Turbo C executable
+      dosbox.run("C:\\BIN\\TC.EXE");
+    }).catch((err) => {
+      console.error("Error loading Turbo C++:", err);
+      alert("Failed to load Turbo C++ emulator. Check console.");
+    });
+  });
+</script>
+</body>
+</html>
