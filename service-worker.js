@@ -7,7 +7,7 @@ const FILES_TO_CACHE = [
   "./TURBOC3.zip",
   "./manifest.json",
   "/online-c/icon-1.png",
-  "/online-c/icon-2.png",
+  "/online-c/icon-2.ico",
   "https://v8.js-dos.com/latest/js-dos.js",
   "https://v8.js-dos.com/latest/emulators/emulators.js",
   "https://v8.js-dos.com/latest/js-dos.css"
@@ -48,4 +48,5 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+
 
