@@ -8,6 +8,9 @@
 <!-- js-dos v8 styles -->
 <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
 
+<!-- PWA manifest -->
+<link rel="manifest" href="manifest.json">
+
 <style>
   body {
     background-color: #0b0c10;
@@ -25,6 +28,7 @@
     font-size: 1.5rem;
     color: #45a29e;
     margin-bottom: 20px;
+    text-align: center;
   }
 
   #dos {
@@ -78,6 +82,7 @@
   <h1>Manual (Coming Soon!)</h1>
   <footer>Powered by js-dos.com | Turbo C++ 3.2</footer>
 
+  <!-- Clear old js-dos cache once -->
   <script>
   (async () => {
     if (!localStorage.getItem("jsdos_cache_cleared")) {
@@ -94,28 +99,14 @@
   })();
   </script>
 
+  <!-- js-dos scripts -->
   <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
   <script src="https://v8.js-dos.com/latest/emulators/emulators.js"></script>
 
   <script>
   const startBtn = document.getElementById("start-btn");
   const dosBox = document.getElementById("dos");
-
-  // Hidden input for mobile
-  const hiddenInput = document.createElement("input");
-  hiddenInput.type = "text";
-  hiddenInput.id = "keyboard-helper";
-  hiddenInput.autocapitalize = "none";
-  hiddenInput.autocomplete = "off";
-  hiddenInput.autocorrect = "off";
-  hiddenInput.spellcheck = false;
-  hiddenInput.style.position = "absolute";
-  hiddenInput.style.opacity = "0";
-  hiddenInput.style.height = "0";
-  hiddenInput.style.width = "0";
-  hiddenInput.style.border = "none";
-  hiddenInput.style.zIndex = "-1";
-  document.body.appendChild(hiddenInput);
+  const hiddenInput = document.getElementById("keyboard-helper");
 
   let dosInstance = null;
   let keyboard = null;
@@ -149,7 +140,7 @@
   // --- Mobile tap to focus keyboard ---
   dosBox.addEventListener("touchstart", () => {
     hiddenInput.focus();
-    if (keyboard) keyboard.focus(); // give emulator keyboard focus too
+    if (keyboard) keyboard.focus();
   });
   dosBox.addEventListener("click", () => {
     hiddenInput.focus();
@@ -165,7 +156,15 @@
       keyboard.keyPress(code);
     }
   });
-</script>
+
+  // --- Register Service Worker (for offline use) ---
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js")
+        .then(() => console.log("✅ Service Worker registered"))
+        .catch((err) => console.error("Service Worker failed:", err));
+    });
+  }
+  </script>
 </body>
 </html>
-
