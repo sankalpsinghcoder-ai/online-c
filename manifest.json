@@ -12,12 +12,13 @@
       "type": "image/png"
     },
     {
-      "src": "/online-c/icon-2.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "/online-c/icon-2.ico",
+      "sizes": "256x256",
+      "type": "image/x-icon"
     }
   ]
 }
+
 
 
 
