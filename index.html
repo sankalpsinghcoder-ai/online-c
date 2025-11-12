@@ -158,13 +158,14 @@
   });
 
   // --- Register Service Worker (for offline use) ---
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./service-worker.js")
-        .then(() => console.log("✅ Service Worker registered"))
-        .catch((err) => console.error("Service Worker failed:", err));
-    });
-  }
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/online-c/service-worker.js", { scope: "/online-c/" })
+      .then(reg => console.log("Service Worker registered for Turbo C++:", reg.scope))
+      .catch(err => console.error("Service Worker registration failed:", err));
+  });
+}
   </script>
 </body>
 </html>
+
