@@ -18,411 +18,203 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-PSG23F75');</script>
+<!-- End Google Tag Manager -->
 
+<!-- SEO Metadata -->
 <meta name="title" content="Turbo C++ Online Compiler | Turbo CPP by Sankalp Singh">
-<meta name="description" content="Run Turbo C++ 3.2 directly in your browser.">
-<meta name="keywords" content="Turbo C++, Online Compiler, Turbo C++ 3.2">
+<meta name="description" content="Run Turbo C++ 3.2 directly in your browser. No installation required — just open and start coding instantly with this online Turbo C++ compiler.">
+<meta name="keywords" content="Turbo C++, online compiler, C++ IDE, JS-DOS, DOSBox, run C++ online, Turbo C++ 3.2, browser IDE">
 <meta name="author" content="Sankalp Singh">
 
+  <!-- Open Graph -->
 <meta property="og:title" content="Turbo C++ Online Compiler">
-<meta property="og:description" content="Run Turbo C++ 3.2 directly in your browser.">
+<meta property="og:description" content="Run Turbo C++ 3.2 in your browser — no downloads or setup needed.">
 <meta property="og:image" content="https://sankalpsinghcoder-ai.github.io/online-c/icon-2.ico">
 <meta property="og:url" content="https://sankalpsinghcoder-ai.github.io/online-c/">
 <meta property="og:type" content="website">
 
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9K4J2B06HE"></script>
-
 <script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config','G-9K4J2B06HE');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-9K4J2B06HE');
 </script>
 
+<!-- js-dos v8 styles -->
 <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
 
+<!-- App icons for browsers and PWA -->
 <link rel="icon" type="image/png" sizes="192x192" href="/online-c/icon-1.png">
 <link rel="apple-touch-icon" href="/online-c/icon-2.png">
 <link rel="manifest" href="/online-c/manifest.json">
 
 <style>
+  body {
+    background-color: #0b0c10;
+    color: #66fcf1;
+    font-family: Consolas, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+  h1 {
+    font-size: 1.5rem;
+    color: #45a29e;
+    margin-bottom: 20px;
+    text-align: center;
+  }
 
-body{
-background:#000;
-color:#fff;
-font-family:Arial,Helvetica,sans-serif;
-font-weight:bold;
-line-height:1.6;
-overflow-y:auto;
-padding:30px;
-}
+  #dos {
+    width: 800px;
+    height: 600px;
+    border: 3px solid #45a29e;
+    border-radius: 8px;
+    background: black;
+    display: none;
+  }
 
-.container{
-width:100%;
-max-width:1100px;
-margin:auto;
-}
+  #start-btn {
+    background: #45a29e;
+    color: #0b0c10;
+    font-size: 1.1rem;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
 
-.header{
-text-align:center;
-border:2px solid #fff;
-padding:20px;
-margin-bottom:20px;
-}
+  #start-btn:hover {
+    background: #66fcf1;
+    transform: scale(1.05);
+  }
 
-.header h1{
-font-size:42px;
-margin-bottom:10px;
-}
+  footer {
+    margin-top: 30px;
+    font-size: 0.9rem;
+    color: #888;
+  }
 
-.header p{
-font-size:18px;
-}
-
-.box{
-border:2px solid #fff;
-padding:20px;
-margin-bottom:20px;
-}
-
-.box h2{
-margin-bottom:12px;
-font-size:26px;
-}
-
-.box p{
-margin-bottom:10px;
-font-size:18px;
-}
-
-.notice{
-border:2px solid #fff;
-padding:20px;
-margin-bottom:20px;
-}
-
-.notice h2{
-margin-bottom:15px;
-}
-
-.notice ul{
-padding-left:25px;
-}
-
-.notice li{
-margin-bottom:10px;
-}
-
-#start-btn{
-display:block;
-margin:25px auto;
-padding:15px 40px;
-font-size:22px;
-font-weight:bold;
-background:#fff;
-color:#000;
-border:3px solid #fff;
-cursor:pointer;
-transition:.2s;
-}
-
-#start-btn:hover{
-background:#000;
-color:#fff;
-}
-
-#dos{
-display:none;
-width:100%;
-max-width:900px;
-height:650px;
-margin:20px auto;
-border:3px solid #fff;
-background:#000;
-}
-
-footer{
-margin:40px 0;
-text-align:center;
-font-size:18px;
-border-top:2px solid #fff;
-padding-top:20px;
-}
-
-#keyboard-helper{
-position:absolute;
-opacity:0;
-pointer-events:none;
-}
-
-@media(max-width:900px){
-
-body{
-padding:15px;
-}
-
-.header h1{
-font-size:30px;
-}
-
-#dos{
-height:420px;
-}
-
-}
-
+  /* --- hidden input for mobile keyboard --- */
+  #keyboard-helper {
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
+  }
 </style>
-
 </head>
-
 <body>
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PSG23F75"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+  
+  <h1>Turbo C++ Online Compiler</h1>
+  <h1>Made By Sankalp Singh and powered by js-dos.com | Turbo C++ 3.2</h1>
+  <h1>PLEASE REFRESH THE SITE EVERYTIME YOU VISIT THE SITE</h1>
+  <h2>(THIS COMPILER IS RUNNING INSIDE DOSBOX)</h2>
+  <button id="start-btn">Start Turbo C++</button>
+  <div id="dos"></div>
 
-<noscript>
-<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PSG23F75"
-height="0"
-width="0"
-style="display:none;visibility:hidden">
-</iframe>
-</noscript>
+  <!-- Hidden input for mobile keyboard -->
+  <input id="keyboard-helper" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
-<div class="container">
+  <h2>1. AFTER REFRESHING THE SITE, TAP START BUTTON AND THEN TAP ON PLAY BUTTON</h2>
+  <h2>2. TO SAVE A FILE, FIRST PRESS F2 AND GIVE A FILE NAME AND ENTER, THEN TAP ON SAVE BUTTON SYMBOL ON TOP LEFT CORNER OF THE DOSBOX</h2>
+  <footer>Powered by js-dos.com | Turbo C++ 3.2</footer>
 
-<div class="header">
-
-<h1>Turbo C++ Online Compiler</h1>
-
-<p>
-Powered by <strong>js-dos.com</strong> |
-Turbo C++ 3.2
-</p>
-
-</div>
-
-<div class="box">
-
-<h2>ABOUT</h2>
-
-<p>
-<strong>Sankalp Singh</strong>
-</p>
-
-<p>
-Lucky Institute of Professional Studies,
-Jodhpur
-</p>
-
-<p>
-BCA 2nd Year,
-3rd Semester
-</p>
-
-</div>
-
-<div class="notice">
-
-<h2>IMPORTANT</h2>
-
-<ul>
-
-<li>
-This compiler currently works only on
-<strong>Desktop</strong> and
-<strong>Laptop</strong>.
-</li>
-
-<li>
-Mobile devices are currently not supported.
-</li>
-
-<li>
-Refresh the website every time before starting Turbo C++.
-</li>
-
-<li>
-This compiler runs inside DOSBox.
-</li>
-
-<li>
-Press F2 to save files.
-</li>
-
-<li>
-Press F3 to open files.
-</li>
-
-<li>
-Press F9 to compile.
-</li>
-
-<li>
-Press Ctrl + F9 to run the program.
-</li>
-
-</ul>
-
-</div>
-
-<button id="start-btn">
-Start Turbo C++
-</button>
-
-<div id="dos"></div>
-
-<input
-id="keyboard-helper"
-type="text"
-autocomplete="off"
-autocorrect="off"
-autocapitalize="off"
-spellcheck="false">
-
-<footer>
-
-Made by
-<strong>Sankalp Singh</strong>
-
-<br><br>
-
-Powered by js-dos.com
-
-</footer>
-
-<!-- Clear old js-dos cache once -->
-<script>
-(async () => {
-  if (!localStorage.getItem("jsdos_cache_cleared")) {
-    if (window.indexedDB) {
-      const dbs = await indexedDB.databases();
-
-      for (const db of dbs) {
-        if (db.name && db.name.startsWith("jsdos")) {
-          indexedDB.deleteDatabase(db.name);
+  <!-- Clear old js-dos cache once -->
+  <script>
+  (async () => {
+    if (!localStorage.getItem("jsdos_cache_cleared")) {
+      if (window.indexedDB) {
+        const dbs = await indexedDB.databases();
+        for (const db of dbs) {
+          if (db.name && db.name.startsWith("jsdos")) {
+            indexedDB.deleteDatabase(db.name);
+          }
         }
       }
+      localStorage.setItem("jsdos_cache_cleared", "true");
     }
+  })();
+  </script>
 
-    localStorage.setItem("jsdos_cache_cleared","true");
-  }
-})();
-</script>
+  <!-- js-dos scripts -->
+  <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
+  <script src="https://v8.js-dos.com/latest/emulators/emulators.js"></script>
 
-<!-- js-dos -->
-<script src="https://v8.js-dos.com/latest/js-dos.js"></script>
-<script src="https://v8.js-dos.com/latest/emulators/emulators.js"></script>
+  <script>
+  const startBtn = document.getElementById("start-btn");
+  const dosBox = document.getElementById("dos");
+  const hiddenInput = document.getElementById("keyboard-helper");
 
-<script>
+  let dosInstance = null;
+  let keyboard = null;
 
-const startBtn = document.getElementById("start-btn");
-const dosBox = document.getElementById("dos");
-const hiddenInput = document.getElementById("keyboard-helper");
+  startBtn.addEventListener("click", () => {
+    startBtn.style.display = "none";
+    dosBox.style.display = "block";
 
-let dosInstance = null;
-let keyboard = null;
-
-startBtn.addEventListener("click", () => {
-
-  startBtn.style.display = "none";
-  dosBox.style.display = "block";
-
-  Dos(dosBox,{
-    url:"turboc.jsdos",
-    zipUrl:"TURBOC3.zip",
-  })
-
-  .then(async(dosbox)=>{
-
-    dosInstance=dosbox;
-
-    console.log("Turbo C++ Loaded");
+    Dos(dosBox, {
+  url: "turboc.jsdos",
+  zipUrl: "TURBOC3.zip",
+})
+  .then(async (dosbox) => {
+    dosInstance = dosbox;
+    console.log("Turbo C++ loaded successfully!");
 
     const ev = await dosbox.events();
-
     keyboard = ev.keyboard;
 
+    // Run Turbo C
     dosbox.run("C:\\TURBOC3\\BIN\\TC.EXE");
 
-    setTimeout(()=>{
-      hiddenInput.focus();
-    },2000);
-
+    // Focus hidden input after load
+    setTimeout(() => hiddenInput.focus(), 2000);
   })
-
-  .catch(err=>{
-
-    console.error(err);
-
-    alert("Failed to load Turbo C++ Emulator.");
-
+  .catch((err) => {
+    console.error("Error loading Turbo C++:", err);
+    alert("Failed to load Turbo C++ emulator. Check console.");
   });
 
+
+  // --- Mobile tap to focus keyboard ---
+  dosBox.addEventListener("touchstart", () => {
+    hiddenInput.focus();
+    if (keyboard) keyboard.focus();
+  });
+  dosBox.addEventListener("click", () => {
+    hiddenInput.focus();
+    if (keyboard) keyboard.focus();
+  });
+
+  // --- Send typed characters ---
+  hiddenInput.addEventListener("beforeinput", (e) => {
+    if (!keyboard) return;
+    const val = e.data;
+    if (val) {
+      const code = val.toUpperCase().charCodeAt(0);
+      keyboard.keyPress(code);
+    }
+  });
 });
 
-dosBox.addEventListener("click",()=>{
-
-  hiddenInput.focus();
-
-  if(keyboard) keyboard.focus();
-
-});
-
-dosBox.addEventListener("touchstart",()=>{
-
-  hiddenInput.focus();
-
-  if(keyboard) keyboard.focus();
-
-});
-
-hiddenInput.addEventListener("beforeinput",(e)=>{
-
-  if(!keyboard) return;
-
-  const val=e.data;
-
-  if(val){
-
-    keyboard.keyPress(val.toUpperCase().charCodeAt(0));
-
-  }
-
-});
-
-if("serviceWorker" in navigator){
-
-window.addEventListener("load",()=>{
-
-navigator.serviceWorker
-.register("/online-c/service-worker.js",{
-
-scope:"/online-c/"
-
-})
-
-.then(reg=>{
-
-console.log("Service Worker:",reg.scope);
-
-})
-
-.catch(err=>{
-
-console.error(err);
-
-});
-
-});
-
+  // --- Register Service Worker (for offline use) ---
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/online-c/service-worker.js", { scope: "/online-c/" })
+      .then(reg => console.log("Service Worker registered for Turbo C++:", reg.scope))
+      .catch(err => console.error("Service Worker registration failed:", err));
+  });
 }
-
-console.log("Turbo C++ Ready");
-
 </script>
-
 </body>
 </html>
