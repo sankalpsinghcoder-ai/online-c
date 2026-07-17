@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Turbo C++ Online</title>
 
 <script
@@ -23,10 +23,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- SEO Metadata -->
 <meta name="title" content="Turbo C++ Online Compiler | Turbo CPP by Sankalp Singh">
 <meta name="description" content="Run Turbo C++ 3.2 directly in your browser. No installation required — just open and start coding instantly with this online Turbo C++ compiler.">
-<meta name="keywords" content="Turbo C++, online compiler, C++ IDE, JS-DOS, DOSBox, run C++ online, Turbo C++ 3.2, browser IDE">
+<meta name="keywords" content="Turbo C++, online compiler, online c compiler, online c++ compiler, C++ IDE, JS-DOS, DOSBox, run C++ online, Turbo C++ 3.2, browser IDE">
 <meta name="author" content="Sankalp Singh">
 
-  <!-- Open Graph -->
+<!-- Open Graph -->
 <meta property="og:title" content="Turbo C++ Online Compiler">
 <meta property="og:description" content="Run Turbo C++ 3.2 in your browser — no downloads or setup needed.">
 <meta property="og:image" content="https://sankalpsinghcoder-ai.github.io/online-c/icon-2.ico">
@@ -39,7 +39,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-9K4J2B06HE');
 </script>
 
@@ -52,83 +51,381 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="manifest" href="/online-c/manifest.json">
 
 <style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
   body {
-    background-color: #0b0c10;
-    color: #66fcf1;
-    font-family: Consolas, monospace;
+    background: #000000;
+    color: #ffffff;
+    font-family: 'Courier New', Consolas, monospace;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+    padding: 10px;
   }
 
-  h1 {
-    font-size: 1.5rem;
-    color: #45a29e;
-    margin-bottom: 20px;
+  .container {
+    max-width: 1200px;
+    width: 100%;
+    padding: 10px;
+  }
+
+  /* Header Styles */
+  .header {
     text-align: center;
+    padding: 15px 0;
+    border-bottom: 2px solid #ffffff;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: clamp(1.2rem, 4vw, 2.2rem);
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .header .subtitle {
+    font-size: clamp(0.7rem, 1.5vw, 1rem);
+    color: #cccccc;
+    margin-top: 5px;
+  }
+
+  /* About Section */
+  .about-section {
+    background: #111111;
+    border: 1px solid #333333;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+
+  .about-section h2 {
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+
+  .about-section p {
+    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+    color: #cccccc;
+    line-height: 1.6;
+  }
+
+  .about-section .highlight {
+    color: #ffffff;
+    font-weight: bold;
+  }
+
+  /* Main Content */
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .btn {
+    background: #ffffff;
+    color: #000000;
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    padding: 10px 20px;
+    border: 2px solid #ffffff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
+    font-family: 'Courier New', Consolas, monospace;
+    min-width: 120px;
+  }
+
+  .btn:hover {
+    background: #000000;
+    color: #ffffff;
+  }
+
+  .btn:active {
+    transform: scale(0.95);
+  }
+
+  .btn-secondary {
+    background: #222222;
+    color: #ffffff;
+    border-color: #555555;
+  }
+
+  .btn-secondary:hover {
+    background: #444444;
+    color: #ffffff;
+  }
+
+  .btn-mobile-keyboard {
+    background: #333333;
+    color: #ffffff;
+    border-color: #666666;
+  }
+
+  .btn-mobile-keyboard.active {
+    background: #ffffff;
+    color: #000000;
+    border-color: #ffffff;
+  }
+
+  /* DOSBox Container */
+  #dos-container {
+    width: 100%;
+    max-width: 850px;
+    background: #000000;
+    border: 3px solid #ffffff;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
   }
 
   #dos {
-    width: 800px;
-    height: 600px;
-    border: 3px solid #45a29e;
-    border-radius: 8px;
+    width: 100%;
+    aspect-ratio: 4/3;
     background: black;
     display: none;
   }
 
-  #start-btn {
-    background: #45a29e;
-    color: #0b0c10;
-    font-size: 1.1rem;
-    padding: 10px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-  }
-
-  #start-btn:hover {
-    background: #66fcf1;
-    transform: scale(1.05);
-  }
-
-  footer {
-    margin-top: 30px;
-    font-size: 0.9rem;
-    color: #888;
-  }
-
-  /* --- hidden input for mobile keyboard --- */
+  /* Mobile Keyboard Helper */
   #keyboard-helper {
     position: absolute;
     opacity: 0;
+    width: 1px;
+    height: 1px;
     z-index: -1;
+  }
+
+  /* Status Messages */
+  .status-messages {
+    width: 100%;
+    max-width: 850px;
+    background: #111111;
+    border: 1px solid #333333;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-top: 10px;
+  }
+
+  .status-messages h3 {
+    font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+
+  .status-messages ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .status-messages li {
+    font-size: clamp(0.7rem, 1vw, 0.85rem);
+    color: #aaaaaa;
+    padding: 3px 0;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  .status-messages li:last-child {
+    border-bottom: none;
+  }
+
+  .status-messages .key {
+    background: #222222;
+    padding: 1px 8px;
+    border-radius: 3px;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #444444;
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 25px;
+    padding: 15px 0;
+    border-top: 1px solid #333333;
+    width: 100%;
+    text-align: center;
+  }
+
+  .footer p {
+    font-size: clamp(0.65rem, 1vw, 0.85rem);
+    color: #888888;
+  }
+
+  .footer a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+
+  .footer a:hover {
+    text-decoration: underline;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    body {
+      padding: 5px;
+    }
+
+    .container {
+      padding: 5px;
+    }
+
+    .about-section {
+      padding: 12px 15px;
+    }
+
+    .controls {
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 15px;
+      min-width: 80px;
+      font-size: 0.75rem;
+    }
+
+    #dos-container {
+      border-width: 2px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header h1 {
+      font-size: 1rem;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      min-width: 60px;
+      font-size: 0.65rem;
+    }
+
+    .status-messages {
+      padding: 8px 12px;
+    }
+
+    .status-messages li {
+      font-size: 0.65rem;
+    }
+  }
+
+  /* Loading Animation */
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    color: #888888;
+  }
+
+  .loading.active {
+    display: block;
+  }
+
+  .loading .spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #333333;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 10px auto;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Install PWA Button */
+  #install-btn {
+    display: none;
+  }
+
+  #install-btn.visible {
+    display: inline-block;
   }
 </style>
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PSG23F75"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PSG23F75"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   
-  <h1>Turbo C++ Online Compiler</h1>
-  <h1>Made By Sankalp Singh and powered by js-dos.com | Turbo C++ 3.2</h1>
-  <h1>PLEASE REFRESH THE SITE EVERYTIME YOU VISIT THE SITE</h1>
-  <h2>(THIS COMPILER IS RUNNING INSIDE DOSBOX)</h2>
-  <button id="start-btn">Start Turbo C++</button>
-  <div id="dos"></div>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Turbo C++ Online</h1>
+      <div class="subtitle">Powered by js-dos.com | Turbo C++ 3.2</div>
+    </div>
 
-  <!-- Hidden input for mobile keyboard -->
-  <input id="keyboard-helper" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <!-- About Section -->
+    <div class="about-section">
+      <h2>👨‍💻 About Sankalp Singh</h2>
+      <p>
+        <span class="highlight">Sankalp Singh</span> from 
+        <span class="highlight">Lucky Institute of Professional Studies, Jodhpur</span>, 
+        currently pursuing <span class="highlight">BCA 2nd Year, 3rd Semester</span>. 
+        Passionate about coding and building accessible development tools for everyone.
+      </p>
+    </div>
 
-  <h2>1. AFTER REFRESHING THE SITE, TAP START BUTTON AND THEN TAP ON PLAY BUTTON</h2>
-  <h2>2. TO SAVE A FILE, FIRST PRESS F2 AND GIVE A FILE NAME AND ENTER, THEN TAP ON SAVE BUTTON SYMBOL ON TOP LEFT CORNER OF THE DOSBOX</h2>
-  <footer>Powered by js-dos.com | Turbo C++ 3.2</footer>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Controls -->
+      <div class="controls">
+        <button id="start-btn" class="btn">▶ Start Turbo C++</button>
+        <button id="mobile-keyboard-btn" class="btn btn-mobile-keyboard">⌨️ Mobile Keyboard</button>
+        <button id="install-btn" class="btn btn-secondary">📱 Install App</button>
+      </div>
+
+      <!-- DOSBox Container -->
+      <div id="dos-container">
+        <div id="dos"></div>
+        <div id="loading" class="loading">
+          <div class="spinner"></div>
+          <p>Loading Turbo C++ 3.2...</p>
+        </div>
+        <input id="keyboard-helper" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+
+      <!-- Status Messages -->
+      <div class="status-messages">
+        <h3>📋 Important Information</h3>
+        <ul>
+          <li>🔄 <strong>REFRESH THE SITE</strong> every time you visit</li>
+          <li>💾 To save a file: Press <span class="key">F2</span>, enter filename, then click the <strong>Save</strong> button (top-left of DOSBox)</li>
+          <li>⌨️ Desktop shortcuts: <span class="key">F2</span> (Save), <span class="key">F3</span> (Open), <span class="key">F9</span> (Compile), <span class="key">Ctrl+F9</span> (Run)</li>
+          <li>📱 Mobile: Tap <strong>"Mobile Keyboard"</strong> to enable/disable native keyboard input</li>
+          <li>📲 <strong>Install as App:</strong> Click "Install App" or use browser's "Add to Home Screen"</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>
+        Made with ❤️ by Sankalp Singh | 
+        <a href="https://github.com/sankalpsinghcoder-ai" target="_blank">GitHub</a> | 
+        Powered by <a href="https://js-dos.com" target="_blank">js-dos.com</a>
+      </p>
+    </div>
+  </div>
 
   <!-- Clear old js-dos cache once -->
   <script>
@@ -152,79 +449,148 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script src="https://v8.js-dos.com/latest/emulators/emulators.js"></script>
 
   <script>
+  // DOM Elements
   const startBtn = document.getElementById("start-btn");
   const dosBox = document.getElementById("dos");
+  const loading = document.getElementById("loading");
   const hiddenInput = document.getElementById("keyboard-helper");
+  const mobileKeyboardBtn = document.getElementById("mobile-keyboard-btn");
+  const installBtn = document.getElementById("install-btn");
 
   let dosInstance = null;
   let keyboard = null;
+  let isMobileKeyboardActive = false;
 
+  // Check if mobile device
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  // Show install button if PWA supported
+  if (window.navigator.standalone === false || window.matchMedia('(display-mode: standalone)').matches) {
+    // Already installed
+  } else {
+    // Check if app can be installed
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.classList.add('visible');
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const result = await deferredPrompt.userChoice;
+        if (result.outcome === 'accepted') {
+          console.log('App installed');
+          installBtn.classList.remove('visible');
+        }
+        deferredPrompt = null;
+      }
+    });
+  }
+
+  // Mobile Keyboard Toggle
+  mobileKeyboardBtn.addEventListener('click', () => {
+    isMobileKeyboardActive = !isMobileKeyboardActive;
+    mobileKeyboardBtn.classList.toggle('active');
+    mobileKeyboardBtn.textContent = isMobileKeyboardActive ? '⌨️ Keyboard ON' : '⌨️ Mobile Keyboard';
+
+    if (isMobileKeyboardActive) {
+      hiddenInput.focus();
+      if (keyboard) keyboard.focus();
+    } else {
+      hiddenInput.blur();
+    }
+  });
+
+  // Start Turbo C++
   startBtn.addEventListener("click", () => {
     startBtn.style.display = "none";
     dosBox.style.display = "block";
+    loading.classList.add("active");
 
     Dos(dosBox, {
-  url: "turboc.jsdos",
-  zipUrl: "TURBOC3.zip",
-})
-  .then(async (dosbox) => {
-    dosInstance = dosbox;
-    console.log("Turbo C++ loaded successfully!");
+      url: "turboc.jsdos",
+      zipUrl: "TURBOC3.zip",
+    })
+    .then(async (dosbox) => {
+      dosInstance = dosbox;
+      loading.classList.remove("active");
+      console.log("Turbo C++ loaded successfully!");
 
-    const ev = await dosbox.events();
-    keyboard = ev.keyboard;
+      const ev = await dosbox.events();
+      keyboard = ev.keyboard;
 
-    // Run Turbo C
-    dosbox.run("C:\\TURBOC3\\BIN\\TC.EXE");
+      // Run Turbo C
+      dosbox.run("C:\\TURBOC3\\BIN\\TC.EXE");
 
-    // Focus hidden input after load
-    setTimeout(() => hiddenInput.focus(), 2000);
-  })
-  .catch((err) => {
-    console.error("Error loading Turbo C++:", err);
-    alert("Failed to load Turbo C++ emulator. Check console.");
+      // Focus hidden input after load
+      setTimeout(() => {
+        if (isMobileKeyboardActive) {
+          hiddenInput.focus();
+        }
+      }, 2000);
+
+      // Auto-enable mobile keyboard on mobile devices
+      if (isMobile) {
+        isMobileKeyboardActive = true;
+        mobileKeyboardBtn.classList.add('active');
+        mobileKeyboardBtn.textContent = '⌨️ Keyboard ON';
+        setTimeout(() => hiddenInput.focus(), 2500);
+      }
+    })
+    .catch((err) => {
+      console.error("Error loading Turbo C++:", err);
+      loading.classList.remove("active");
+      alert("Failed to load Turbo C++ emulator. Please refresh and try again.");
+    });
   });
 
-
-  // --- Mobile tap to focus keyboard ---
+  // Mobile tap to focus keyboard
   dosBox.addEventListener("touchstart", () => {
-    hiddenInput.focus();
-    if (keyboard) keyboard.focus();
-  });
-  dosBox.addEventListener("click", () => {
-    hiddenInput.focus();
-    if (keyboard) keyboard.focus();
+    if (isMobileKeyboardActive) {
+      hiddenInput.focus();
+      if (keyboard) keyboard.focus();
+    }
   });
 
-  // --- Send typed characters ---
+  dosBox.addEventListener("click", () => {
+    if (isMobileKeyboardActive) {
+      hiddenInput.focus();
+      if (keyboard) keyboard.focus();
+    }
+  });
+
+  // Send typed characters to DOSBox
   hiddenInput.addEventListener("beforeinput", (e) => {
-    if (!keyboard) return;
+    if (!keyboard || !isMobileKeyboardActive) return;
     const val = e.data;
     if (val) {
       const code = val.toUpperCase().charCodeAt(0);
       keyboard.keyPress(code);
     }
   });
-});
 
-  // --- Register Service Worker (for offline use) ---
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/online-c/service-worker.js", { scope: "/online-c/" })
-      .then(reg => console.log("Service Worker registered for Turbo C++:", reg.scope))
-      .catch(err => console.error("Service Worker registration failed:", err));
+  // Handle Enter key for mobile
+  hiddenInput.addEventListener("keydown", (e) => {
+    if (!keyboard || !isMobileKeyboardActive) return;
+    if (e.key === "Enter") {
+      e.preventDefault();
+      keyboard.keyPress(13); // Enter key code
+    }
   });
-}
-</script>
+
+  // Register Service Worker (for offline use)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/online-c/service-worker.js", { scope: "/online-c/" })
+        .then(reg => console.log("Service Worker registered for Turbo C++:", reg.scope))
+        .catch(err => console.error("Service Worker registration failed:", err));
+    });
+  }
+
+  // Add keyboard shortcuts info
+  console.log("Turbo C++ Shortcuts: F2=Save, F3=Open, F9=Compile, Ctrl+F9=Run");
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
