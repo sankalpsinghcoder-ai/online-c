@@ -23,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- SEO Metadata -->
 <meta name="title" content="Turbo C++ Online Compiler | Turbo CPP by Sankalp Singh">
 <meta name="description" content="Run Turbo C++ 3.2 directly in your browser. No installation required — just open and start coding instantly with this online Turbo C++ compiler.">
-<meta name="keywords" content="Turbo C++, online compiler, online c compiler, online c++ compiler, C++ IDE, JS-DOS, DOSBox, run C++ online, Turbo C++ 3.2, browser IDE">
+<meta name="keywords" content="Turbo C++, online compiler, C++ IDE, JS-DOS, DOSBox, run C++ online, Turbo C++ 3.2, browser IDE">
 <meta name="author" content="Sankalp Singh">
 
 <!-- Open Graph -->
@@ -42,8 +42,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   gtag('config', 'G-9K4J2B06HE');
 </script>
 
-<!-- js-dos v8 styles -->
-<link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
+<!-- js-dos v8.4.0 styles -->
+<link rel="stylesheet" href="https://v8.js-dos.com/8.4.0/js-dos.css">
 
 <!-- App icons for browsers and PWA -->
 <link rel="icon" type="image/png" sizes="192x192" href="/online-c/icon-1.png">
@@ -60,7 +60,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   body {
     background: #000000;
     color: #ffffff;
-    font-family: 'Courier New', Consolas, monospace;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -69,7 +69,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   .container {
-    max-width: 1200px;
+    max-width: 1100px;
     width: 100%;
     padding: 10px;
   }
@@ -77,48 +77,51 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   /* Header Styles */
   .header {
     text-align: center;
-    padding: 15px 0;
+    padding: 15px 0 10px 0;
     border-bottom: 2px solid #ffffff;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
   }
 
   .header h1 {
-    font-size: clamp(1.2rem, 4vw, 2.2rem);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
     color: #ffffff;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
   }
 
   .header .subtitle {
-    font-size: clamp(0.7rem, 1.5vw, 1rem);
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
     color: #cccccc;
-    margin-top: 5px;
+    margin-top: 3px;
+    font-weight: 400;
   }
 
   /* About Section */
   .about-section {
-    background: #111111;
+    background: #0a0a0a;
     border: 1px solid #333333;
-    padding: 15px 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
+    padding: 12px 18px;
+    margin-bottom: 15px;
+    border-radius: 6px;
   }
 
   .about-section h2 {
     font-size: clamp(0.9rem, 2vw, 1.2rem);
     color: #ffffff;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
+    font-weight: 600;
   }
 
   .about-section p {
-    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
-    color: #cccccc;
-    line-height: 1.6;
+    font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+    color: #dddddd;
+    line-height: 1.5;
+    font-weight: 400;
   }
 
   .about-section .highlight {
     color: #ffffff;
-    font-weight: bold;
+    font-weight: 600;
   }
 
   /* Main Content */
@@ -126,14 +129,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
   }
 
   /* Controls */
   .controls {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     justify-content: center;
     width: 100%;
   }
@@ -141,19 +144,19 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .btn {
     background: #ffffff;
     color: #000000;
-    font-size: clamp(0.8rem, 1.5vw, 1rem);
-    padding: 10px 20px;
+    font-size: clamp(0.85rem, 1.5vw, 1rem);
+    padding: 10px 22px;
     border: 2px solid #ffffff;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-weight: bold;
-    font-family: 'Courier New', Consolas, monospace;
-    min-width: 120px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    min-width: 100px;
   }
 
   .btn:hover {
-    background: #000000;
+    background: #222222;
     color: #ffffff;
   }
 
@@ -162,20 +165,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   .btn-secondary {
-    background: #222222;
+    background: #1a1a1a;
     color: #ffffff;
-    border-color: #555555;
+    border-color: #444444;
   }
 
   .btn-secondary:hover {
-    background: #444444;
+    background: #333333;
     color: #ffffff;
   }
 
   .btn-mobile-keyboard {
-    background: #333333;
+    background: #1a1a1a;
     color: #ffffff;
-    border-color: #666666;
+    border-color: #555555;
   }
 
   .btn-mobile-keyboard.active {
@@ -190,7 +193,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     max-width: 850px;
     background: #000000;
     border: 3px solid #ffffff;
-    border-radius: 8px;
+    border-radius: 6px;
     position: relative;
     overflow: hidden;
   }
@@ -198,34 +201,60 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   #dos {
     width: 100%;
     aspect-ratio: 4/3;
-    background: black;
+    background: #000000;
+    display: none;
+    position: relative;
+    z-index: 1;
+  }
+
+  #dos canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Mobile Keyboard Helper - Overlay approach */
+  #keyboard-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    cursor: text;
     display: none;
   }
 
-  /* Mobile Keyboard Helper */
+  #keyboard-overlay.active {
+    display: block;
+  }
+
   #keyboard-helper {
     position: absolute;
     opacity: 0;
     width: 1px;
     height: 1px;
-    z-index: -1;
+    top: 0;
+    left: 0;
+    z-index: 20;
   }
 
   /* Status Messages */
   .status-messages {
     width: 100%;
     max-width: 850px;
-    background: #111111;
+    background: #0a0a0a;
     border: 1px solid #333333;
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 12px 16px;
     margin-top: 10px;
   }
 
   .status-messages h3 {
-    font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+    font-size: clamp(0.8rem, 1.2vw, 0.95rem);
     color: #ffffff;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    font-weight: 600;
   }
 
   .status-messages ul {
@@ -235,9 +264,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   .status-messages li {
     font-size: clamp(0.7rem, 1vw, 0.85rem);
-    color: #aaaaaa;
+    color: #bbbbbb;
     padding: 3px 0;
     border-bottom: 1px solid #1a1a1a;
+    font-weight: 400;
   }
 
   .status-messages li:last-child {
@@ -245,31 +275,34 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 
   .status-messages .key {
-    background: #222222;
+    background: #1a1a1a;
     padding: 1px 8px;
     border-radius: 3px;
     color: #ffffff;
-    font-weight: bold;
+    font-weight: 600;
     border: 1px solid #444444;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
   }
 
   /* Footer */
   .footer {
-    margin-top: 25px;
-    padding: 15px 0;
+    margin-top: 20px;
+    padding: 12px 0;
     border-top: 1px solid #333333;
     width: 100%;
     text-align: center;
   }
 
   .footer p {
-    font-size: clamp(0.65rem, 1vw, 0.85rem);
+    font-size: clamp(0.7rem, 1vw, 0.85rem);
     color: #888888;
+    font-weight: 400;
   }
 
   .footer a {
     color: #ffffff;
     text-decoration: none;
+    font-weight: 500;
   }
 
   .footer a:hover {
@@ -287,15 +320,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     }
 
     .about-section {
-      padding: 12px 15px;
+      padding: 10px 12px;
     }
 
     .controls {
-      gap: 8px;
+      gap: 6px;
     }
 
     .btn {
-      padding: 8px 15px;
+      padding: 8px 14px;
       min-width: 80px;
       font-size: 0.75rem;
     }
@@ -307,21 +340,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   @media (max-width: 480px) {
     .header h1 {
-      font-size: 1rem;
+      font-size: 1.1rem;
     }
 
     .btn {
-      padding: 6px 12px;
+      padding: 6px 10px;
       min-width: 60px;
       font-size: 0.65rem;
     }
 
     .status-messages {
-      padding: 8px 12px;
+      padding: 8px 10px;
     }
 
     .status-messages li {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
     }
   }
 
@@ -397,11 +430,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <!-- DOSBox Container -->
       <div id="dos-container">
         <div id="dos"></div>
+        <div id="keyboard-overlay"></div>
+        <input id="keyboard-helper" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         <div id="loading" class="loading">
           <div class="spinner"></div>
           <p>Loading Turbo C++ 3.2...</p>
         </div>
-        <input id="keyboard-helper" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
       </div>
 
       <!-- Status Messages -->
@@ -444,9 +478,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   })();
   </script>
 
-  <!-- js-dos scripts -->
-  <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
-  <script src="https://v8.js-dos.com/latest/emulators/emulators.js"></script>
+  <!-- js-dos v8.4.0 scripts -->
+  <script src="https://v8.js-dos.com/8.4.0/js-dos.js"></script>
+  <script src="https://v8.js-dos.com/8.4.0/emulators/emulators.js"></script>
 
   <script>
   // DOM Elements
@@ -454,6 +488,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   const dosBox = document.getElementById("dos");
   const loading = document.getElementById("loading");
   const hiddenInput = document.getElementById("keyboard-helper");
+  const keyboardOverlay = document.getElementById("keyboard-overlay");
   const mobileKeyboardBtn = document.getElementById("mobile-keyboard-btn");
   const installBtn = document.getElementById("install-btn");
 
@@ -468,7 +503,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   if (window.navigator.standalone === false || window.matchMedia('(display-mode: standalone)').matches) {
     // Already installed
   } else {
-    // Check if app can be installed
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -489,6 +523,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     });
   }
 
+  // Function to send keys to DOSBox
+  function sendKeyToDosbox(keyCode) {
+    if (!keyboard) return;
+    try {
+      keyboard.keyPress(keyCode);
+    } catch (e) {
+      console.log('Keyboard error:', e);
+    }
+  }
+
   // Mobile Keyboard Toggle
   mobileKeyboardBtn.addEventListener('click', () => {
     isMobileKeyboardActive = !isMobileKeyboardActive;
@@ -496,10 +540,90 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     mobileKeyboardBtn.textContent = isMobileKeyboardActive ? '⌨️ Keyboard ON' : '⌨️ Mobile Keyboard';
 
     if (isMobileKeyboardActive) {
-      hiddenInput.focus();
-      if (keyboard) keyboard.focus();
+      keyboardOverlay.classList.add('active');
+      // Focus the hidden input
+      setTimeout(() => {
+        hiddenInput.focus();
+        if (keyboard) keyboard.focus();
+      }, 100);
     } else {
+      keyboardOverlay.classList.remove('active');
       hiddenInput.blur();
+    }
+  });
+
+  // Handle keyboard input through hidden input
+  hiddenInput.addEventListener('input', (e) => {
+    if (!isMobileKeyboardActive || !keyboard) {
+      // Clear the input if keyboard is not active
+      hiddenInput.value = '';
+      return;
+    }
+
+    const value = hiddenInput.value;
+    if (value.length > 0) {
+      // Send each character
+      for (let i = 0; i < value.length; i++) {
+        const char = value[i];
+        const keyCode = char.charCodeAt(0);
+        // For uppercase letters, send as is
+        // For special characters, we might need to handle differently
+        if (char >= 'a' && char <= 'z') {
+          // Send uppercase for DOS
+          const upperCode = char.toUpperCase().charCodeAt(0);
+          sendKeyToDosbox(upperCode);
+        } else if (char >= 'A' && char <= 'Z') {
+          sendKeyToDosbox(keyCode);
+        } else {
+          // For numbers and symbols, send directly
+          sendKeyToDosbox(keyCode);
+        }
+      }
+      // Clear the input after processing
+      hiddenInput.value = '';
+    }
+  });
+
+  // Handle Enter key
+  hiddenInput.addEventListener('keydown', (e) => {
+    if (!isMobileKeyboardActive || !keyboard) return;
+    
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendKeyToDosbox(13); // Enter key code
+      hiddenInput.value = '';
+    } else if (e.key === 'Backspace') {
+      e.preventDefault();
+      sendKeyToDosbox(8); // Backspace key code
+      hiddenInput.value = '';
+    }
+  });
+
+  // Handle mobile keyboard on overlay click
+  keyboardOverlay.addEventListener('click', (e) => {
+    if (isMobileKeyboardActive) {
+      e.stopPropagation();
+      hiddenInput.focus();
+    }
+  });
+
+  keyboardOverlay.addEventListener('touchstart', (e) => {
+    if (isMobileKeyboardActive) {
+      e.preventDefault();
+      hiddenInput.focus();
+    }
+  });
+
+  // Also handle clicks on DOSBox
+  dosBox.addEventListener('click', () => {
+    if (isMobileKeyboardActive) {
+      hiddenInput.focus();
+    }
+  });
+
+  dosBox.addEventListener('touchstart', () => {
+    if (isMobileKeyboardActive) {
+      hiddenInput.focus();
     }
   });
 
@@ -524,19 +648,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       // Run Turbo C
       dosbox.run("C:\\TURBOC3\\BIN\\TC.EXE");
 
-      // Focus hidden input after load
-      setTimeout(() => {
-        if (isMobileKeyboardActive) {
-          hiddenInput.focus();
-        }
-      }, 2000);
-
       // Auto-enable mobile keyboard on mobile devices
       if (isMobile) {
-        isMobileKeyboardActive = true;
-        mobileKeyboardBtn.classList.add('active');
-        mobileKeyboardBtn.textContent = '⌨️ Keyboard ON';
-        setTimeout(() => hiddenInput.focus(), 2500);
+        setTimeout(() => {
+          isMobileKeyboardActive = true;
+          mobileKeyboardBtn.classList.add('active');
+          mobileKeyboardBtn.textContent = '⌨️ Keyboard ON';
+          keyboardOverlay.classList.add('active');
+          hiddenInput.focus();
+        }, 3000);
       }
     })
     .catch((err) => {
@@ -544,40 +664,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       loading.classList.remove("active");
       alert("Failed to load Turbo C++ emulator. Please refresh and try again.");
     });
-  });
-
-  // Mobile tap to focus keyboard
-  dosBox.addEventListener("touchstart", () => {
-    if (isMobileKeyboardActive) {
-      hiddenInput.focus();
-      if (keyboard) keyboard.focus();
-    }
-  });
-
-  dosBox.addEventListener("click", () => {
-    if (isMobileKeyboardActive) {
-      hiddenInput.focus();
-      if (keyboard) keyboard.focus();
-    }
-  });
-
-  // Send typed characters to DOSBox
-  hiddenInput.addEventListener("beforeinput", (e) => {
-    if (!keyboard || !isMobileKeyboardActive) return;
-    const val = e.data;
-    if (val) {
-      const code = val.toUpperCase().charCodeAt(0);
-      keyboard.keyPress(code);
-    }
-  });
-
-  // Handle Enter key for mobile
-  hiddenInput.addEventListener("keydown", (e) => {
-    if (!keyboard || !isMobileKeyboardActive) return;
-    if (e.key === "Enter") {
-      e.preventDefault();
-      keyboard.keyPress(13); // Enter key code
-    }
   });
 
   // Register Service Worker (for offline use)
@@ -589,8 +675,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     });
   }
 
-  // Add keyboard shortcuts info
   console.log("Turbo C++ Shortcuts: F2=Save, F3=Open, F9=Compile, Ctrl+F9=Run");
+  console.log("Mobile keyboard support: Tap 'Mobile Keyboard' to toggle");
   </script>
 </body>
 </html>
