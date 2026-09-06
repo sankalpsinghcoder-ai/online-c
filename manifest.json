@@ -1,24 +1,37 @@
 {
-  "name": "Turbo C++ Online",
+  "name": "Turbo C++ Online Compiler",
   "short_name": "Turbo C++",
-  "start_url": "./index.html",
+  "start_url": "/online-c/",
+  "scope": "/online-c/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#0b0c10",
   "theme_color": "#0b0c10",
+  "description": "Run Turbo C++ 3.2 directly in your browser without installation.",
   "icons": [
     {
-      "src": "/online-c/icon-1.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "/online-c/icon-1-48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "/online-c/icon-2.ico",
-      "sizes": "256x256",
-      "type": "image/x-icon"
+      "src": "/online-c/icon-1-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/online-c/icon-1-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/online-c/icon-1-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
-
-
-
-
