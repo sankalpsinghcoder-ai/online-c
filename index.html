@@ -294,6 +294,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script src="https://v8.js-dos.com/latest/emulators/emulators.js"></script>
 
   <script>
+  // CRITICAL FIX: Tell JS-DOS v8 where to load the WebAssembly cores from
+  emulators.pathPrefix = "https://v8.js-dos.com/latest/emulators/";
+
   const startBtn = document.getElementById("start-btn");
   const dosBox = document.getElementById("dos");
   const toggleOskBtn = document.getElementById("toggle-osk-btn");
@@ -381,29 +384,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
   });
 
-  // Start Emulator Handler
+  // Start Emulator Handler (Corrected API for v8)
   startBtn.addEventListener("click", () => {
     startBtn.style.display = "none";
     dosBox.style.display = "block";
     toggleOskBtn.style.display = "inline-block";
     oskSubtext.style.display = "block";
 
-    Dos(dosBox, {
-      url: "turboc.jsdos",
-      zipUrl: "TURBOC3.zip",
-      onEvent: (event, ci) => {
-        if (event === "ci-ready") {
-          ciInstance = ci;
-        }
-      }
-    })
-    .then((dosbox) => {
-      dosbox.run("C:\\TURBOC3\\BIN\\TC.EXE");
-    })
-    .catch((err) => {
-      console.error("Error loading Turbo C++:", err);
-      alert("Failed to load Turbo C++ emulator. Please refresh.");
-    });
+    // Attempt to load turboc.jsdos first, fallback to TURBOC3.zip if missing
+    Dos(dosBox).run("turboc.jsdos")
+      .then((ci) => {
+        ciInstance = ci;
+      })
+      .catch((err) => {
+        console.warn("Could not load turboc.jsdos, attempting TURBOC3.zip fallback...");
+        Dos(dosBox).run("TURBOC3.zip")
+          .then((ci) => {
+            ciInstance = ci;
+          })
+          .catch((fallbackErr) => {
+            console.error("Emulator failed to load:", fallbackErr);
+            alert("Failed to load emulator. Check browser console.");
+          });
+      });
   });
 
   // Service Worker Registration
