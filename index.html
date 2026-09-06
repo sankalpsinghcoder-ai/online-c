@@ -3,19 +3,19 @@
 <head>
 <meta name="google-adsense-account" content="ca-pub-4518793325867602">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Turbo C++ Online Compiler | Run Turbo C++ 3.2 in Browser</title>
 <link rel="canonical" href="https://sankalpsinghcoder-ai.github.io/online-c/">
 
 <!-- SEO Metadata -->
 <meta name="title" content="Turbo C++ Online Compiler | Turbo CPP by Sankalp Singh">
-<meta name="description" content="Run Turbo C++ 3.2 directly in your browser without installation. Works on desktop and mobile. Created by Sankalp Singh from Lucky Institute of Professional Studies, Jodhpur.">
+<meta name="description" content="Run Turbo C++ 3.2 directly in your browser without installation. Created by Sankalp Singh from Lucky Institute of Professional Studies, Jodhpur.">
 <meta name="keywords" content="Turbo C++, turbo c++, online compiler, online c compiler, online c++ compiler, C++ IDE, JS-DOS, DOSBox, run C++ online, Turbo C++ 3.2, browser IDE, Sankalp Singh">
 <meta name="author" content="Sankalp Singh">
 
 <!-- Open Graph / Social -->
 <meta property="og:title" content="Turbo C++ Online Compiler | Browser C++ IDE">
-<meta property="og:description" content="Run Turbo C++ 3.2 in your browser — no downloads or setup needed. Supports mobile native keyboard. Created by Sankalp Singh.">
+<meta property="og:description" content="Run Turbo C++ 3.2 in your browser — no downloads or setup needed. Created by Sankalp Singh.">
 <meta property="og:image" content="https://sankalpsinghcoder-ai.github.io/online-c/icon-1-192.png">
 <meta property="og:url" content="https://sankalpsinghcoder-ai.github.io/online-c/">
 <meta property="og:type" content="website">
@@ -26,7 +26,7 @@
 <meta name="twitter:description" content="Run Turbo C++ 3.2 directly in your web browser instantly.">
 <meta name="twitter:image" content="https://sankalpsinghcoder-ai.github.io/online-c/icon-1-192.png">
 
-<!-- Google Standard Favicons for Search & Rich Snippets -->
+<!-- Google Standard Favicons for Search Snippets -->
 <link rel="icon" type="image/x-icon" href="https://sankalpsinghcoder-ai.github.io/online-c/favicon.ico">
 <link rel="icon" type="image/png" sizes="48x48" href="https://sankalpsinghcoder-ai.github.io/online-c/icon-1-48.png">
 <link rel="icon" type="image/png" sizes="96x96" href="https://sankalpsinghcoder-ai.github.io/online-c/icon-1-96.png">
@@ -35,14 +35,14 @@
 <link rel="apple-touch-icon" sizes="180x180" href="https://sankalpsinghcoder-ai.github.io/online-c/icon-1-192.png">
 <link rel="manifest" href="/online-c/manifest.json">
 
-<!-- JSON-LD Structured Data -->
+<!-- JSON-LD Structured Data for GEO and Search Engines -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "Turbo C++ Online Compiler",
   "url": "https://sankalpsinghcoder-ai.github.io/online-c/",
-  "description": "Run Turbo C++ 3.2 directly in your browser without installation using JS-DOS and DOSBox. Offers full mobile native keyboard support.",
+  "description": "Run Turbo C++ 3.2 directly in your browser without installation using JS-DOS and DOSBox.",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Web, Windows, macOS, Android, iOS, Chrome OS",
   "browserRequirements": "Requires JavaScript and WebAssembly support",
@@ -65,6 +65,7 @@
 }
 </script>
 
+<!-- Deferred Analytics & Ads for Performance Optimization -->
 <script async defer src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4518793325867602" crossorigin="anonymous"></script>
 
 <!-- Google Tag Manager -->
@@ -87,177 +88,108 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="stylesheet" href="https://v8.js-dos.com/latest/js-dos.css">
 
 <style>
-  * {
-    box-sizing: border-box;
-  }
-
   body {
     background-color: #0b0c10;
     color: #66fcf1;
-    font-family: Consolas, "Courier New", monospace;
+    font-family: Consolas, monospace;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     min-height: 100vh;
     margin: 0;
-    padding: 15px;
-    touch-action: manipulation;
-  }
-
-  header {
-    text-align: center;
-    width: 100%;
-    max-width: 800px;
-    margin-bottom: 10px;
+    padding: 20px;
+    box-sizing: border-box;
   }
 
   h1 {
-    font-size: clamp(1.4rem, 4vw, 2.2rem);
+    font-size: 1.8rem;
     color: #45a29e;
-    margin: 10px 0 5px 0;
+    margin-bottom: 5px;
     text-align: center;
-    line-height: 1.2;
   }
 
   .sub-heading {
-    font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+    font-size: 1rem;
     color: #888;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     text-align: center;
   }
 
-  .emulator-wrapper {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .instructions {
+    font-size: 0.85rem;
+    color: #c5c6c7;
+    text-align: center;
+    max-width: 600px;
+    margin: 10px 0;
+    line-height: 1.4;
+    content-visibility: auto;
   }
 
   #dos {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-    max-height: 600px;
+    width: 800px;
+    height: 600px;
     border: 3px solid #45a29e;
     border-radius: 8px;
     background: black;
     display: none;
-    touch-action: none;
-  }
-
-  .control-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    margin: 15px 0;
-    width: 100%;
-    max-width: 800px;
+    max-width: 100%;
   }
 
   #start-btn {
     background: #45a29e;
     color: #0b0c10;
     font-size: 1.1rem;
-    font-weight: bold;
-    padding: 14px 32px;
+    padding: 12px 28px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.2s ease;
-    width: 100%;
-    max-width: 320px;
+    transition: all 0.2s ease-in-out;
+    margin: 15px 0;
   }
 
   #start-btn:hover {
     background: #66fcf1;
-    transform: scale(1.02);
-  }
-
-  #toggle-osk-btn {
-    display: none;
-    background: #1f2833;
-    color: #ffffff;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: bold;
-    padding: 12px 20px;
-    border: 2px solid #45a29e;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    max-width: 320px;
-    text-align: center;
-  }
-
-  .toggle-subtext {
-    display: none;
-    font-size: 0.7rem;
-    color: #aaa;
-    margin-top: -4px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .instructions {
-    font-size: clamp(0.75rem, 2.2vw, 0.85rem);
-    color: #c5c6c7;
-    text-align: left;
-    width: 100%;
-    max-width: 800px;
-    margin: 15px 0;
-    line-height: 1.5;
-    background: #1f2833;
-    padding: 12px 16px;
-    border-radius: 6px;
+    transform: scale(1.05);
   }
 
   footer {
-    margin-top: auto;
-    padding-top: 20px;
-    font-size: 0.85rem;
+    margin-top: 30px;
+    font-size: 0.9rem;
     color: #888;
     text-align: center;
+    content-visibility: auto;
   }
 
   #keyboard-helper {
     position: absolute;
-    opacity: 0.01;
-    left: -9999px;
-    top: -9999px;
+    opacity: 0;
     z-index: -1;
   }
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PSG23F75"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-  <header>
-    <h1>Turbo C++ Online Compiler (Turbo C++ 3.2)</h1>
-    <div class="sub-heading">Developed by Sankalp Singh | Lucky Institute of Professional Studies, Jodhpur</div>
-    <div class="sub-heading">Powered by js-dos & DOSBox</div>
-  </header>
+  <h1>Turbo C++ Online Compiler (Turbo C++ 3.2)</h1>
+  <div class="sub-heading">Developed by Sankalp Singh | Lucky Institute of Professional Studies, Jodhpur</div>
+  <div class="sub-heading">Powered by js-dos & DOSBox</div>
 
-  <div class="emulator-wrapper">
-    <div class="control-panel">
-      <button id="start-btn">Start Turbo C++</button>
-      <button id="toggle-osk-btn">NATIVE OS KEYBOARD: <span id="osk-status" style="color: #ff4444;">OFF</span></button>
-      <div id="osk-subtext" class="toggle-subtext">ENABLING THIS OPENS YOUR DEVICE'S KEYBOARD ON CLICK</div>
-    </div>
-
-    <div id="dos"></div>
+  <div class="instructions">
+    <strong>Note:</strong> Please refresh the site every time you visit. This compiler runs completely inside your browser via DOSBox emulation.
   </div>
 
+  <button id="start-btn">Start Turbo C++</button>
+  <div id="dos"></div>
+
+  <!-- Hidden input for mobile keyboard -->
   <input id="keyboard-helper" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
   <div class="instructions">
-    <strong>Mobile & Desktop Instructions:</strong><br>
-    • <strong>Mobile Users:</strong> Turn on "NATIVE OS KEYBOARD" above, then tap inside the emulator screen to open your phone keyboard.<br>
-    • <strong>Saving Files:</strong> Press <code>F2</code> inside Turbo C++, type your filename, hit Enter, and click the save icon on the top-left of the DOSBox bar.<br>
-    • Refresh the page if you encounter screen freeze or emulator initialization delays.
+    <p><strong>1.</strong> After starting, tap the start button and click on the play/emulator interface.<br>
+    <strong>2.</strong> To save a file, press <code>F2</code>, type your filename, hit Enter, and click the save button icon on the top-left corner of the DOSBox window.</p>
   </div>
 
   <footer>Powered by js-dos.com | Turbo C++ 3.2</footer>
@@ -286,31 +218,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script>
   const startBtn = document.getElementById("start-btn");
   const dosBox = document.getElementById("dos");
-  const toggleOskBtn = document.getElementById("toggle-osk-btn");
-  const oskStatus = document.getElementById("osk-status");
-  const oskSubtext = document.getElementById("osk-subtext");
   const hiddenInput = document.getElementById("keyboard-helper");
 
   let dosInstance = null;
   let keyboard = null;
-  let enableNativeOSK = false;
-
-  toggleOskBtn.addEventListener("click", () => {
-    enableNativeOSK = !enableNativeOSK;
-    oskStatus.textContent = enableNativeOSK ? "ON" : "OFF";
-    oskStatus.style.color = enableNativeOSK ? "#00ff00" : "#ff4444";
-    if (enableNativeOSK) {
-      hiddenInput.focus();
-    }
-  });
 
   startBtn.addEventListener("click", () => {
     startBtn.style.display = "none";
     dosBox.style.display = "block";
-    toggleOskBtn.style.display = "inline-block";
-    oskSubtext.style.display = "block";
 
-    // Original working Dos() initialization logic
     Dos(dosBox, {
       url: "turboc.jsdos",
       zipUrl: "TURBOC3.zip",
@@ -323,23 +239,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       keyboard = ev.keyboard;
 
       dosbox.run("C:\\TURBOC3\\BIN\\TC.EXE");
+
+      setTimeout(() => hiddenInput.focus(), 2000);
     })
     .catch((err) => {
       console.error("Error loading Turbo C++:", err);
-      alert("Failed to load Turbo C++ emulator. Please refresh.");
+      alert("Failed to load Turbo C++ emulator. Check console.");
     });
 
     dosBox.addEventListener("touchstart", () => {
-      if (enableNativeOSK) hiddenInput.focus();
+      hiddenInput.focus();
       if (keyboard) keyboard.focus();
     });
     dosBox.addEventListener("click", () => {
-      if (enableNativeOSK) hiddenInput.focus();
+      hiddenInput.focus();
       if (keyboard) keyboard.focus();
     });
 
     hiddenInput.addEventListener("beforeinput", (e) => {
-      if (!enableNativeOSK || !keyboard) return;
+      if (!keyboard) return;
       const val = e.data;
       if (val) {
         const code = val.toUpperCase().charCodeAt(0);
