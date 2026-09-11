@@ -17,13 +17,21 @@ const FILES_TO_CACHE = [
   "https://cdn.jsdelivr.net/npm/js-dos@8.4.1/dist/js-dos.css"
 ];
 
+let cachePromise;
+function getCache() {
+  if (!cachePromise) {
+    cachePromise = caches.open(CACHE_NAME);
+  }
+  return cachePromise;
+}
+
 // =========================
 // Install (Fault-Tolerant)
 // =========================
 self.addEventListener("install", event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
+    getCache().then(cache => {
       // Fetch each file individually so one 404 does NOT break the service worker
       return Promise.allSettled(
         FILES_TO_CACHE.map(url => 
@@ -67,7 +75,7 @@ self.addEventListener("fetch", event => {
       fetch(event.request)
         .then(response => {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+          getCache().then(cache => cache.put(event.request, copy));
           return response;
         })
         .catch(() => caches.match(event.request).then(res => res || caches.match("./")))
@@ -81,7 +89,7 @@ self.addEventListener("fetch", event => {
       if (cached) {
         fetch(event.request).then(response => {
           if (response.ok) {
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
+            getCache().then(cache => cache.put(event.request, response.clone()));
           }
         }).catch(() => {});
         return cached;
@@ -89,7 +97,7 @@ self.addEventListener("fetch", event => {
 
       return fetch(event.request).then(response => {
         if (response.ok) {
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
+          getCache().then(cache => cache.put(event.request, response.clone()));
         }
         return response;
       });
