@@ -12,9 +12,9 @@ const FILES_TO_CACHE = [
   "/online-c/icon-1-96.png",
   "/online-c/icon-1-144.png",
   "/online-c/icon-1-192.png",
-  "https://v8.js-dos.com/latest/js-dos.js",
-  "https://v8.js-dos.com/latest/emulators/emulators.js",
-  "https://v8.js-dos.com/latest/js-dos.css"
+  "https://cdn.jsdelivr.net/npm/js-dos@8.4.1/dist/js-dos.js",
+  "https://cdn.jsdelivr.net/npm/emulators@8.4.1/dist/emulators.js",
+  "https://cdn.jsdelivr.net/npm/js-dos@8.4.1/dist/js-dos.css"
 ];
 
 // =========================
