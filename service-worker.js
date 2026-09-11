@@ -91,7 +91,7 @@ self.addEventListener("fetch", event => {
           if (response.ok) {
             getCache().then(cache => cache.put(event.request, response.clone()));
           }
-        }).catch(() => {});
+        }).catch(err => console.warn("SW background fetch failed:", event.request.url, err));
         return cached;
       }
 
