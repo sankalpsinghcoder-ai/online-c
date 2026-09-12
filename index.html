@@ -259,16 +259,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <!-- Clear old js-dos cache once -->
   <script>
   (async () => {
-    if (!localStorage.getItem("jsdos_cache_cleared")) {
-      if (window.indexedDB) {
-        const dbs = await indexedDB.databases();
-        for (const db of dbs) {
-          if (db.name && db.name.startsWith("jsdos")) {
-            indexedDB.deleteDatabase(db.name);
+    try {
+      if (!localStorage.getItem("jsdos_cache_cleared")) {
+        if (window.indexedDB && typeof indexedDB.databases === "function") {
+          const dbs = await indexedDB.databases();
+          for (const db of dbs) {
+            if (db.name && db.name.startsWith("jsdos")) {
+              indexedDB.deleteDatabase(db.name);
+            }
           }
         }
+        localStorage.setItem("jsdos_cache_cleared", "true");
       }
-      localStorage.setItem("jsdos_cache_cleared", "true");
+    } catch (e) {
+      console.warn("Storage access restricted:", e);
     }
   })();
   </script>
