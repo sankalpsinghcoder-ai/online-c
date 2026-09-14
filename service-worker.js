@@ -1,6 +1,6 @@
 // service-worker.js
 
-const CACHE_NAME = "turboc-cache-v4";
+const CACHE_NAME = "turboc-cache-v5";
 
 const FILES_TO_CACHE = [
   "./",
@@ -69,16 +69,20 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.protocol !== "http:" && requestUrl.protocol !== "https:") return;
+
   // HTML Navigation (Same-Origin Only)
   if (event.request.mode === "navigate" || event.request.destination === "document") {
-    const requestUrl = new URL(event.request.url);
     if (requestUrl.origin !== self.location.origin) return;
 
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          const copy = response.clone();
-          getCache().then(cache => cache.put(event.request, copy));
+          if (response.ok) {
+            const copy = response.clone();
+            getCache().then(cache => cache.put(event.request, copy));
+          }
           return response;
         })
         .catch(() => caches.match(event.request).then(res => res || caches.match("./")))
