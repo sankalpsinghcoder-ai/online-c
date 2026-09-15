@@ -1,6 +1,6 @@
 // service-worker.js
 
-const CACHE_NAME = "turboc-cache-v5";
+const CACHE_NAME = "turboc-cache-v6";
 
 const FILES_TO_CACHE = [
   "./",
@@ -16,6 +16,14 @@ const FILES_TO_CACHE = [
   "https://cdn.jsdelivr.net/npm/emulators@8.4.1/dist/emulators.js",
   "https://cdn.jsdelivr.net/npm/js-dos@8.4.1/dist/js-dos.css"
 ];
+
+// Helper to prevent caching non-OK or uncacheable responses (e.g., Cache-Control: no-store)
+function isCacheable(response) {
+  if (!response || !response.ok) return false;
+  const cacheControl = response.headers.get("Cache-Control");
+  if (cacheControl && cacheControl.includes("no-store")) return false;
+  return true;
+}
 
 let cachePromise;
 function getCache() {
@@ -36,7 +44,7 @@ self.addEventListener("install", event => {
       return Promise.allSettled(
         FILES_TO_CACHE.map(url => 
           fetch(url).then(response => {
-            if (response.ok) {
+            if (isCacheable(response)) {
               return cache.put(url, response);
             }
           }).catch(err => console.warn("SW failed to cache:", url, err))
@@ -79,7 +87,7 @@ self.addEventListener("fetch", event => {
     event.respondWith(
       fetch(event.request)
         .then(response => {
-          if (response.ok) {
+          if (isCacheable(response)) {
             const copy = response.clone();
             getCache().then(cache => cache.put(event.request, copy));
           }
@@ -95,7 +103,7 @@ self.addEventListener("fetch", event => {
     caches.match(event.request).then(cached => {
       if (cached) {
         fetch(event.request).then(response => {
-          if (response.ok) {
+          if (isCacheable(response)) {
             getCache().then(cache => cache.put(event.request, response.clone()));
           }
         }).catch(err => console.warn("SW background fetch failed:", event.request.url, err));
@@ -103,7 +111,7 @@ self.addEventListener("fetch", event => {
       }
 
       return fetch(event.request).then(response => {
-        if (response.ok) {
+        if (isCacheable(response)) {
           getCache().then(cache => cache.put(event.request, response.clone()));
         }
         return response;
