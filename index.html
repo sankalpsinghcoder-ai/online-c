@@ -216,20 +216,25 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     z-index: -1;
   }
 
-  /* Fixed Left Sidebar Ad (Stationary / No Scroll Effect) */
+  /* Fixed Far-Left Sidebar Ad */
   .fixed-left-ad {
     position: fixed;
+    left: 10px;
     top: 50%;
-    left: max(10px, calc(50% - 400px - 170px));
     transform: translateY(-50%);
-    z-index: 999;
+    z-index: 1000;
+    width: 160px;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
-  /* Automatically hide on smaller screens so it doesn't overlap compiler */
-  @media (max-width: 1024px) {
+  .fixed-left-ad #container-7c1ffc2b184987854a8e890a56395089 {
+    width: 100%;
+  }
+
+  /* Automatically hide ad sidebar on screens under 1150px wide so it never overlaps content */
+  @media (max-width: 1150px) {
     .fixed-left-ad {
       display: none;
     }
@@ -239,6 +244,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <body>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PSG23F75" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- Fixed Far-Left Sidebar Ad Unit (1:3 Native Banner) -->
+<div class="fixed-left-ad">
+  <script async="async" data-cfasync="false" src="https://laceratereceiptworkman.com/7c1ffc2b184987854a8e890a56395089/invoke.js"></script>
+  <div id="container-7c1ffc2b184987854a8e890a56395089"></div>
+  <div style="font-size: 0.65rem; color: #888; margin-top: 4px; text-align: center;">
+    Ads by Adsterra
+  </div>
+</div>
   
   <h1>Turbo C++ Online Compiler (Turbo C++ 3.2)</h1>
   <div class="sub-heading">Developed by Sankalp Singh | Lucky Institute of Professional Studies, Jodhpur</div>
