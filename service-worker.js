@@ -1,6 +1,6 @@
 // service-worker.js
 
-const CACHE_NAME = "turboc-cache-v6";
+const CACHE_NAME = "turboc-cache-v7";
 
 const FILES_TO_CACHE = [
   "./",
@@ -17,11 +17,16 @@ const FILES_TO_CACHE = [
   "https://cdn.jsdelivr.net/npm/js-dos@8.4.1/dist/js-dos.css"
 ];
 
-// Helper to prevent caching non-OK or uncacheable responses (e.g., Cache-Control: no-store)
+// Helper to prevent caching non-OK or uncacheable responses (e.g., Cache-Control: no-store, no-cache, private)
 function isCacheable(response) {
   if (!response || !response.ok) return false;
   const cacheControl = response.headers.get("Cache-Control");
-  if (cacheControl && cacheControl.includes("no-store")) return false;
+  if (cacheControl) {
+    const lc = cacheControl.toLowerCase();
+    if (lc.includes("no-store") || lc.includes("no-cache") || lc.includes("private")) {
+      return false;
+    }
+  }
   return true;
 }
 
