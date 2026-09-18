@@ -472,9 +472,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       if (!keyboard) return;
       const val = e.data;
       if (val) {
+        // Enforce input length limit to mitigate DoS / memory bloat from oversized input
+        if (val.length > 256) return;
         const code = val.toUpperCase().charCodeAt(0);
-        keyboard.keyPress(code);
+        if (!isNaN(code)) {
+          keyboard.keyPress(code);
+        }
       }
+      // Reset input value to prevent unbounded string memory growth in DOM
+      hiddenInput.value = "";
     });
   });
 
