@@ -480,6 +480,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       }
       hiddenInput.value = "";
     });
+
+    // Reset hidden input on input events to prevent input accumulation/leakage in DOM state
+    hiddenInput.addEventListener("input", () => {
+      hiddenInput.value = "";
+    });
   });
 
   if ("serviceWorker" in navigator) {

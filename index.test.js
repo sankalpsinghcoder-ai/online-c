@@ -62,3 +62,36 @@ describe('Storage access restricted', () => {
     }, 0);
   });
 });
+
+describe('Keyboard helper input security', () => {
+  it('should reset value to empty string when input event is triggered', () => {
+    const html = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
+    document.body.innerHTML = html;
+
+    const hiddenInput = document.getElementById('keyboard-helper');
+    expect(hiddenInput).not.toBeNull();
+
+    window.Dos = jest.fn().mockImplementation(() => ({
+      then: jest.fn().mockReturnThis(),
+      catch: jest.fn().mockReturnThis()
+    }));
+
+    const scripts = document.querySelectorAll('script');
+    let mainScriptContent = '';
+    scripts.forEach(script => {
+      if (script.textContent.includes('hiddenInput.addEventListener("input"')) {
+        mainScriptContent = script.textContent;
+      }
+    });
+
+    eval(mainScriptContent);
+
+    const startBtn = document.getElementById('start-btn');
+    startBtn.click();
+
+    hiddenInput.value = 'sensitive data';
+    hiddenInput.dispatchEvent(new Event('input'));
+
+    expect(hiddenInput.value).toBe('');
+  });
+});
