@@ -469,16 +469,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     });
 
     hiddenInput.addEventListener("beforeinput", (e) => {
-      if (!keyboard) return;
-      const val = e.data;
-      if (val) {
-        if (val.length > 256) return;
-        const code = val.toUpperCase().charCodeAt(0);
-        if (!isNaN(code)) {
-          keyboard.keyPress(code);
+      try {
+        if (!keyboard) return;
+        const val = e.data;
+        if (val) {
+          if (val.length > 256) return;
+          const code = val.toUpperCase().charCodeAt(0);
+          if (!isNaN(code)) {
+            keyboard.keyPress(code);
+          }
         }
+      } catch (err) {
+        console.warn("Error processing beforeinput event:", err);
+      } finally {
+        hiddenInput.value = "";
       }
-      hiddenInput.value = "";
     });
 
     // Reset hidden input on input events to prevent input accumulation/leakage in DOM state

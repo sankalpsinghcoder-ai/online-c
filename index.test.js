@@ -94,4 +94,63 @@ describe('Keyboard helper input security', () => {
 
     expect(hiddenInput.value).toBe('');
   });
+
+  it('should reset value even if beforeinput handler encounters an error during keyPress', async () => {
+    const originalWarn = console.warn;
+    const warnMock = jest.fn();
+    console.warn = warnMock;
+
+    try {
+      const html = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
+      document.body.innerHTML = html;
+
+      const hiddenInput = document.getElementById('keyboard-helper');
+
+      const mockKeyboard = {
+        keyPress: jest.fn().mockImplementation(() => {
+          throw new Error('keyPress failure');
+        })
+      };
+
+      window.Dos = jest.fn().mockImplementation(() => {
+        const promiseMock = {
+          then: jest.fn().mockImplementation((cb) => {
+            cb({
+              events: jest.fn().mockResolvedValue({ keyboard: mockKeyboard }),
+              run: jest.fn()
+            });
+            return promiseMock;
+          }),
+          catch: jest.fn().mockReturnThis()
+        };
+        return promiseMock;
+      });
+
+      const scripts = document.querySelectorAll('script');
+      let mainScriptContent = '';
+      scripts.forEach(script => {
+        if (script.textContent.includes('hiddenInput.addEventListener("input"')) {
+          mainScriptContent = script.textContent;
+        }
+      });
+
+      eval(mainScriptContent);
+
+      const startBtn = document.getElementById('start-btn');
+      startBtn.click();
+
+      // Wait tick for async Dos().then callback to initialize keyboard
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      hiddenInput.value = 'A';
+      const beforeInputEvent = new Event('beforeinput');
+      Object.defineProperty(beforeInputEvent, 'data', { value: 'A' });
+      hiddenInput.dispatchEvent(beforeInputEvent);
+
+      expect(hiddenInput.value).toBe('');
+      expect(warnMock).toHaveBeenCalledWith('Error processing beforeinput event:', expect.any(Error));
+    } finally {
+      console.warn = originalWarn;
+    }
+  });
 });
