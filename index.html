@@ -412,7 +412,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         if (window.indexedDB && typeof indexedDB.databases === "function") {
           const dbs = await indexedDB.databases();
           for (const db of dbs) {
-            if (db.name && db.name.startsWith("jsdos")) {
+            if (db && typeof db.name === "string" && db.name.startsWith("jsdos")) {
               indexedDB.deleteDatabase(db.name);
             }
           }

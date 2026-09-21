@@ -61,6 +61,54 @@ describe('Storage access restricted', () => {
       done();
     }, 0);
   });
+
+  it('should only delete indexedDB databases with valid string names starting with jsdos', (done) => {
+    let mockStorage = {};
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: jest.fn((key) => mockStorage[key] || null),
+        setItem: jest.fn((key, val) => { mockStorage[key] = val; }),
+        removeItem: jest.fn((key) => { delete mockStorage[key]; })
+      },
+      writable: true,
+      configurable: true
+    });
+
+    const deleteDatabaseMock = jest.fn();
+    Object.defineProperty(window, 'indexedDB', {
+      value: {
+        databases: jest.fn().mockResolvedValue([
+          { name: 'jsdos_test_db' },
+          { name: 'other_db' },
+          { name: null },
+          { name: 12345 },
+          null
+        ]),
+        deleteDatabase: deleteDatabaseMock
+      },
+      writable: true,
+      configurable: true
+    });
+
+    const html = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
+    document.body.innerHTML = html;
+
+    const scripts = document.querySelectorAll('script');
+    let cacheClearScriptContent = '';
+    scripts.forEach(script => {
+      if (script.textContent.includes('localStorage.getItem("jsdos_cache_cleared")')) {
+        cacheClearScriptContent = script.textContent;
+      }
+    });
+
+    eval(cacheClearScriptContent);
+
+    setTimeout(() => {
+      expect(deleteDatabaseMock).toHaveBeenCalledTimes(1);
+      expect(deleteDatabaseMock).toHaveBeenCalledWith('jsdos_test_db');
+      done();
+    }, 10);
+  });
 });
 
 describe('Keyboard helper input security', () => {
