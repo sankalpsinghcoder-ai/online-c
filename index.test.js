@@ -154,3 +154,44 @@ describe('Keyboard helper input security', () => {
     }
   });
 });
+
+describe('Service Worker URL validation', () => {
+  it('should ignore malformed or non-http(s) URLs without throwing', () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+
+    let fetchListener;
+    const selfMock = {
+      addEventListener: (event, callback) => {
+        if (event === 'fetch') fetchListener = callback;
+      },
+      location: { origin: 'https://sankalpsinghcoder-ai.github.io' }
+    };
+
+    const runSW = new Function('self', 'caches', 'fetch', swCode);
+    runSW(selfMock, {}, jest.fn());
+
+    expect(fetchListener).toBeDefined();
+
+    // Test malformed URL
+    const invalidEvent = {
+      request: {
+        method: 'GET',
+        url: 'invalid-url-string'
+      },
+      respondWith: jest.fn()
+    };
+    expect(() => fetchListener(invalidEvent)).not.toThrow();
+    expect(invalidEvent.respondWith).not.toHaveBeenCalled();
+
+    // Test unsupported protocol (e.g., chrome-extension:// or data:)
+    const chromeExtEvent = {
+      request: {
+        method: 'GET',
+        url: 'chrome-extension://abcdef/script.js'
+      },
+      respondWith: jest.fn()
+    };
+    expect(() => fetchListener(chromeExtEvent)).not.toThrow();
+    expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
+  });
+});

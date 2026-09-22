@@ -82,7 +82,12 @@ self.addEventListener("activate", event => {
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
-  const requestUrl = new URL(event.request.url);
+  let requestUrl;
+  try {
+    requestUrl = new URL(event.request.url);
+  } catch (e) {
+    return;
+  }
   if (requestUrl.protocol !== "http:" && requestUrl.protocol !== "https:") return;
 
   // HTML Navigation (Same-Origin Only)
