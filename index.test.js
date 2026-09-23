@@ -153,6 +153,69 @@ describe('Keyboard helper input security', () => {
       console.warn = originalWarn;
     }
   });
+
+  it('should process multi-character strings in beforeinput up to the max length limit', async () => {
+    const html = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
+    document.body.innerHTML = html;
+
+    const hiddenInput = document.getElementById('keyboard-helper');
+
+    const mockKeyboard = {
+      keyPress: jest.fn()
+    };
+
+    window.Dos = jest.fn().mockImplementation(() => {
+      const promiseMock = {
+        then: jest.fn().mockImplementation((cb) => {
+          cb({
+            events: jest.fn().mockResolvedValue({ keyboard: mockKeyboard }),
+            run: jest.fn()
+          });
+          return promiseMock;
+        }),
+        catch: jest.fn().mockReturnThis()
+      };
+      return promiseMock;
+    });
+
+    const scripts = document.querySelectorAll('script');
+    let mainScriptContent = '';
+    scripts.forEach(script => {
+      if (script.textContent.includes('hiddenInput.addEventListener("input"')) {
+        mainScriptContent = script.textContent;
+      }
+    });
+
+    eval(mainScriptContent);
+
+    const startBtn = document.getElementById('start-btn');
+    startBtn.click();
+
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    // Test normal multi-char input (e.g., word completion "abc")
+    hiddenInput.value = 'abc';
+    const beforeInputEvent = new Event('beforeinput');
+    Object.defineProperty(beforeInputEvent, 'data', { value: 'abc' });
+    hiddenInput.dispatchEvent(beforeInputEvent);
+
+    expect(mockKeyboard.keyPress).toHaveBeenCalledTimes(3);
+    expect(mockKeyboard.keyPress).toHaveBeenNthCalledWith(1, 'A'.charCodeAt(0));
+    expect(mockKeyboard.keyPress).toHaveBeenNthCalledWith(2, 'B'.charCodeAt(0));
+    expect(mockKeyboard.keyPress).toHaveBeenNthCalledWith(3, 'C'.charCodeAt(0));
+    expect(hiddenInput.value).toBe('');
+
+    mockKeyboard.keyPress.mockClear();
+
+    // Test input exceeding 256 chars is rejected
+    const longInput = 'A'.repeat(257);
+    const longBeforeInputEvent = new Event('beforeinput');
+    Object.defineProperty(longBeforeInputEvent, 'data', { value: longInput });
+    hiddenInput.dispatchEvent(longBeforeInputEvent);
+
+    expect(mockKeyboard.keyPress).not.toHaveBeenCalled();
+    expect(hiddenInput.value).toBe('');
+  });
 });
 
 describe('Service Worker URL validation', () => {
