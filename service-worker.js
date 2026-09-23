@@ -99,7 +99,7 @@ self.addEventListener("fetch", event => {
         .then(response => {
           if (isCacheable(response)) {
             const copy = response.clone();
-            getCache().then(cache => cache.put(event.request, copy));
+            getCache().then(cache => cache.put(event.request, copy)).catch(err => console.warn("SW cache put failed:", err));
           }
           return response;
         })
@@ -114,7 +114,7 @@ self.addEventListener("fetch", event => {
       if (cached) {
         fetch(event.request).then(response => {
           if (isCacheable(response)) {
-            getCache().then(cache => cache.put(event.request, response.clone()));
+            getCache().then(cache => cache.put(event.request, response.clone())).catch(err => console.warn("SW cache put failed:", err));
           }
         }).catch(err => console.warn("SW background fetch failed:", event.request.url, err));
         return cached;
@@ -122,7 +122,7 @@ self.addEventListener("fetch", event => {
 
       return fetch(event.request).then(response => {
         if (isCacheable(response)) {
-          getCache().then(cache => cache.put(event.request, response.clone()));
+          getCache().then(cache => cache.put(event.request, response.clone())).catch(err => console.warn("SW cache put failed:", err));
         }
         return response;
       });
