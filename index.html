@@ -161,8 +161,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     background-color: #1f2833;
     border-bottom: 2px solid #45a29e;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr auto auto 1fr;
     align-items: center;
+    gap: 12px;
     padding: 8px 15px;
     box-sizing: border-box;
     z-index: 10000;
@@ -181,7 +182,33 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 10px;
+    padding: 0 5px;
+  }
+
+  /* Preferred Source Button Navbar Style */
+  .preferred-source-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #0b0c10;
+    border: 2px solid #45a29e;
+    padding: 9px 16px;
+    border-radius: 30px;
+    text-decoration: none;
+    color: #66fcf1;
+    box-shadow: 0 4px 12px rgba(69, 162, 158, 0.2);
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+    font-family: Consolas, monospace;
+    font-size: 0.85rem;
+    font-weight: bold;
+  }
+
+  .preferred-source-btn:hover {
+    transform: translateY(-2px);
+    background: #45a29e;
+    color: #0b0c10;
+    box-shadow: 0 6px 16px rgba(69, 162, 158, 0.4);
   }
 
   .nav-ad-right {
@@ -308,21 +335,22 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     z-index: -1;
   }
 
-  @media (max-width: 1100px) {
+  @media (max-width: 1200px) {
     .sticky-navbar {
       display: flex;
       flex-direction: column;
       height: auto;
       padding: 10px;
     }
-    .nav-ad-left, .nav-ad-right, .nav-insta-center {
+    .nav-ad-left, .nav-ad-right, .nav-insta-center, .preferred-source-btn {
       width: 100%;
       align-items: center;
       justify-content: center;
       margin: 6px 0;
+      box-sizing: border-box;
     }
     body {
-      padding-top: 240px;
+      padding-top: 290px;
     }
   }
 </style>
@@ -364,6 +392,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       </div>
     </a>
   </div>
+
+  <!-- Google Preferred Source Button (Right of Insta Button) -->
+  <a href="https://www.google.com/preferences/source?q=sankalpsinghcoder-ai.github.io" 
+     target="_blank" 
+     rel="noopener" 
+     class="preferred-source-btn">
+     ⭐ Google Preferred Source
+  </a>
 
   <!-- Right Banner Ad with Disclaimer -->
   <div class="nav-ad-right">
