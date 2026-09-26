@@ -194,4 +194,44 @@ describe('Service Worker URL validation', () => {
     expect(() => fetchListener(chromeExtEvent)).not.toThrow();
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
+
+  it('should reject non-cacheable responses (HTTP 206, Vary: *) in isCacheable', () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+
+    let isCacheableFunc;
+    const selfMock = {
+      addEventListener: jest.fn(),
+      location: { origin: 'https://sankalpsinghcoder-ai.github.io' }
+    };
+
+    // Extract isCacheable function by executing script context or Function body
+    const runSW = new Function('self', 'caches', 'fetch', `${swCode}\nreturn isCacheable;`);
+    isCacheableFunc = runSW(selfMock, {}, jest.fn());
+
+    expect(typeof isCacheableFunc).toBe('function');
+
+    // 200 OK without uncacheable headers -> true
+    const okResponse = {
+      ok: true,
+      status: 200,
+      headers: new Map([['Cache-Control', 'public, max-age=3600']])
+    };
+    expect(isCacheableFunc(okResponse)).toBe(true);
+
+    // 206 Partial Content (despite ok === true in fetch API response) -> false
+    const partialResponse = {
+      ok: true,
+      status: 206,
+      headers: new Map()
+    };
+    expect(isCacheableFunc(partialResponse)).toBe(false);
+
+    // Vary: * -> false
+    const varyStarResponse = {
+      ok: true,
+      status: 200,
+      headers: new Map([['Vary', '*']])
+    };
+    expect(isCacheableFunc(varyStarResponse)).toBe(false);
+  });
 });
