@@ -194,4 +194,31 @@ describe('Service Worker URL validation', () => {
     expect(() => fetchListener(chromeExtEvent)).not.toThrow();
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
+
+  it('should reject status 206 (Partial Content) and Vary: * in isCacheable', () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+    const extractIsCacheable = new Function(`${swCode}; return isCacheable;`);
+    const isCacheable = extractIsCacheable();
+
+    const mockResponse = (ok, status, headersObj = {}) => ({
+      ok,
+      status,
+      headers: {
+        get: (key) => headersObj[key] || null
+      }
+    });
+
+    // Valid response
+    expect(isCacheable(mockResponse(true, 200))).toBe(true);
+
+    // HTTP 206 Partial Content (ok is true for 206 in Fetch API)
+    expect(isCacheable(mockResponse(true, 206))).toBe(false);
+
+    // Vary: * header
+    expect(isCacheable(mockResponse(true, 200, { Vary: '*' }))).toBe(false);
+    expect(isCacheable(mockResponse(true, 200, { Vary: 'Accept-Encoding, *' }))).toBe(false);
+
+    // Normal Vary header should be accepted
+    expect(isCacheable(mockResponse(true, 200, { Vary: 'Accept-Encoding' }))).toBe(true);
+  });
 });
