@@ -109,7 +109,7 @@
         "Upload and run local .C and .CPP source files",
         "Touch-friendly controls and mobile keyboard helper",
         "Full support for conio.h (getch, clrscr) and graphics.h",
-        "Fullscreen immersive mode with 4:3 aspect ratio toggle"
+        "Fullscreen immersive mode with 100% screen cover"
       ]
     },
     {
@@ -137,7 +137,7 @@
           "name": "How do I see the output screen in Turbo C++?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Turbo C++ displays program execution on the DOS User Screen. Press Alt+F5 (or click 'User Screen' on the mobile action bar) to view output. You can also add getch(); before return 0; in main() to pause the screen."
+            "text": "Turbo C++ displays program execution on the DOS User Screen. Press Alt+F5 (or click 'Output' on the mobile action bar) to view output. You can also add getch(); before return 0; in main() to pause the screen."
           }
         },
         {
@@ -217,7 +217,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     overflow-x: hidden;
   }
 
-  /* Fixed Navigation Bar */
+  /* Fixed Navigation Bar with Only Ads */
   .sticky-navbar {
     position: fixed;
     top: 0;
@@ -227,13 +227,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     background-color: #171d24;
     border-bottom: 2px solid var(--teal-accent);
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     gap: 12px;
     padding: 8px 18px;
     z-index: 9999;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
-    flex-wrap: wrap;
   }
 
   .nav-ad-left, .nav-ad-right {
@@ -243,57 +242,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     justify-content: center;
     overflow: hidden;
     max-width: 468px;
-  }
-
-  .nav-center-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .preferred-source-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--bg-dark);
-    border: 2px solid var(--teal-accent);
-    padding: 8px 14px;
-    border-radius: 24px;
-    text-decoration: none;
-    color: var(--cyan-accent);
-    font-size: 0.82rem;
-    font-weight: 600;
-    font-family: var(--font-mono);
-    transition: all 0.2s ease;
-    white-space: nowrap;
-  }
-
-  .preferred-source-btn:hover {
-    background: var(--teal-accent);
-    color: var(--bg-dark);
-  }
-
-  .insta-card {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-    padding: 7px 14px;
-    border-radius: 24px;
-    text-decoration: none;
-    color: #ffffff;
-    box-shadow: 0 3px 10px rgba(220, 39, 67, 0.3);
-    font-size: 0.82rem;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-
-  .insta-icon {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
   }
 
   .ad-disclaimer {
@@ -314,8 +262,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     align-items: center;
   }
 
+  /* Header 3-Line Titles */
   h1 {
-    font-size: 1.75rem;
+    font-size: 1.85rem;
     color: var(--cyan-accent);
     margin-bottom: 4px;
     text-align: center;
@@ -323,25 +272,26 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     letter-spacing: -0.02em;
   }
 
-  .sub-heading {
-    font-size: 0.88rem;
-    color: #8c979a;
-    margin-bottom: 4px;
+  .author-line {
+    font-size: 0.95rem;
+    color: var(--cyan-accent);
+    margin-bottom: 6px;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    font-weight: 600;
+    font-family: var(--font-mono);
   }
 
-  .author-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(69, 162, 158, 0.15);
-    border: 1px solid var(--teal-accent);
-    color: var(--cyan-accent);
-    padding: 3px 10px;
-    border-radius: 14px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    margin-bottom: 12px;
+  .feature-tagline {
+    font-size: 0.86rem;
+    color: #8c979a;
+    margin-bottom: 14px;
+    text-align: center;
+    max-width: 760px;
+    line-height: 1.45;
   }
 
   /* Toolbar Actions */
@@ -666,22 +616,59 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     transform: translateX(-50%) translateY(0);
   }
 
-  /* Fullscreen Styles */
+  /* ==========================================================================
+     FULLSCREEN IMMERSIVE TURBO C++ DISPLAY (100% Screen Cover - Zero Black Bars)
+     ========================================================================== */
   body.is-fullscreen {
     overflow: hidden !important;
-    padding: 0 !important;
-    margin: 0 !important;
     background: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
   }
+
   body.is-fullscreen .sticky-navbar,
   body.is-fullscreen h1,
-  body.is-fullscreen .sub-heading,
-  body.is-fullscreen .author-tag,
-  body.is-fullscreen .instructions,
+  body.is-fullscreen .author-line,
+  body.is-fullscreen .feature-tagline,
   body.is-fullscreen .ide-toolbar,
   body.is-fullscreen .doc-section,
+  body.is-fullscreen .status-shortcut-bar,
+  body.is-fullscreen .mobile-touch-bar,
   body.is-fullscreen footer {
     display: none !important;
+  }
+
+  /* Hide JS-DOS left sidebar and UI controls in fullscreen */
+  body.is-fullscreen .emulator-sidebar,
+  body.is-fullscreen .jsdos-controls,
+  body.is-fullscreen .sidebar,
+  body.is-fullscreen .sidebar-thin,
+  body.is-fullscreen .sidebar-button,
+  body.is-fullscreen .contentbar,
+  body.is-fullscreen .sidebar-slider,
+  body.is-fullscreen div[class*="sidebar"],
+  #dos-wrapper:fullscreen .sidebar,
+  #dos-wrapper:fullscreen .jsdos-controls,
+  #dos-wrapper:fullscreen div[class*="sidebar"] {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  body.is-fullscreen .main-wrapper {
+    max-width: 100vw !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
   }
 
   body.is-fullscreen #emulator-card {
@@ -689,47 +676,81 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     border-radius: 0 !important;
     position: fixed !important;
     inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
     z-index: 99999 !important;
     margin: 0 !important;
+    padding: 0 !important;
+    background: #000000 !important;
+    overflow: hidden !important;
   }
 
-  body.is-fullscreen #dos-wrapper {
+  body.is-fullscreen #dos-wrapper,
+  #dos-wrapper:fullscreen,
+  :-webkit-full-screen #dos-wrapper {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    background: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    overflow: hidden !important;
   }
 
-  body.is-fullscreen #dos canvas {
+  body.is-fullscreen #dos,
+  body.is-fullscreen .emulator-wrapper,
+  body.is-fullscreen .emulator-screen,
+  body.is-fullscreen .emulator-content,
+  body.is-fullscreen .jsdos-screen {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #000000 !important;
+    border: none !important;
+  }
+
+  /* 100% Edge-to-edge canvas stretch */
+  body.is-fullscreen #dos canvas,
+  body.is-fullscreen canvas,
+  body.is-fullscreen .emulator-canvas,
+  #dos-wrapper:fullscreen canvas,
+  :-webkit-full-screen canvas {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
     object-fit: fill !important;
-  }
-
-  body.is-fullscreen.aspect-fit #dos canvas {
-    width: auto !important;
-    height: 100vh !important;
-    aspect-ratio: 4 / 3 !important;
-    object-fit: contain !important;
-    margin: 0 auto !important;
-  }
-
-  /* Floating Fullscreen Controls */
-  .fs-floating-bar {
-    display: none;
-    position: fixed;
-    bottom: 12px;
-    right: 14px;
-    background-color: rgba(23, 29, 36, 0.92);
-    border: 1px solid var(--teal-accent);
-    border-radius: 20px;
-    padding: 4px 8px;
-    gap: 6px;
-    z-index: 100001;
-    backdrop-filter: blur(6px);
-  }
-  body.is-fullscreen .fs-floating-bar {
-    display: flex;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: pixelated !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    z-index: 100 !important;
   }
 
   /* Documentation & SEO FAQ Section */
@@ -844,12 +865,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .sticky-navbar {
       justify-content: center;
       padding: 6px 10px;
+      min-height: auto;
     }
-    .nav-ad-left, .nav-ad-right {
-      display: none; /* Hide heavy banner ads on mobile for fast response */
+    .nav-ad-left {
+      display: flex; /* Only one banner appears on mobile */
+      width: 100%;
+    }
+    .nav-ad-right {
+      display: none !important; /* Hide second banner on mobile */
     }
     body {
-      padding-top: 75px;
+      padding-top: 90px;
     }
   }
 </style>
@@ -858,9 +884,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PSG23F75" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-<!-- Fixed Navigation Bar -->
+<!-- Fixed Navigation Bar (Only Ads: Two on Desktop, One on Mobile) -->
 <header class="sticky-navbar">
-  <!-- Left Banner Ad with Disclaimer -->
+  <!-- Left Banner Ad -->
   <div class="nav-ad-left">
     <script>
       atOptions = {
@@ -877,26 +903,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     </div>
   </div>
 
-  <!-- Center Links -->
-  <div class="nav-center-group">
-    <a href="https://www.instagram.com/codedrunkards/" target="_blank" rel="noopener noreferrer" class="insta-card">
-      <svg class="insta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-      </svg>
-      <span>@codedrunkards</span>
-    </a>
-
-    <a href="https://www.google.com/preferences/source?q=sankalpsinghcoder-ai.github.io" 
-       target="_blank" 
-       rel="noopener" 
-       class="preferred-source-btn">
-       ⭐ Preferred Source
-    </a>
-  </div>
-
-  <!-- Right Banner Ad with Disclaimer -->
+  <!-- Right Banner Ad -->
   <div class="nav-ad-right">
     <script>
       atOptions = {
@@ -915,23 +922,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </header>
 
 <main class="main-wrapper">
+  <!-- Header 3-Line Titles -->
   <h1>Turbo C++ Online Compiler</h1>
-  <div class="sub-heading">Authentic Borland Turbo C &amp; C++ 3.2 in Your Browser</div>
-  <div class="author-tag">Created by Sankalp Singh | Lucky Institute of Professional Studies, Jodhpur</div>
+  <div class="author-line">Created by Sankalp Singh (Lucky Institute, Jodhpur)</div>
+  <div class="feature-tagline">Now mobile compatible and supports import code and copy/paste for desktop and mobile users especially.</div>
 
   <!-- Action / Feature Toolbar -->
   <div class="ide-toolbar">
     <button type="button" id="btn-open-paste" class="tool-btn highlight" title="Paste C/C++ Code (Shift+Insert or Ctrl+Shift+V)">
-      📋 <span>Paste Code</span>
-    </button>
-    <button type="button" id="btn-import-file" class="tool-btn" title="Import .CPP or .C file">
-      📂 <span>Import (.CPP)</span>
-    </button>
-    <button type="button" id="btn-zoom-editor" class="tool-btn" title="Zoom Active Window (F5)">
-      🔍 <span>Zoom (F5)</span>
+      📋 <span>Paste Code (use this if mobile users, desktop users can also use it)</span>
     </button>
     <button type="button" id="btn-toggle-fs" class="tool-btn" title="Toggle Fullscreen (F11)">
-      ⛶ <span>Fullscreen</span>
+      ⛶ <span>Fullscreen (for no ads)</span>
     </button>
   </div>
 
@@ -947,14 +949,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <div id="emulator-card">
     <div id="dos-wrapper">
       <div id="dos" tabindex="0"></div>
-
-      <!-- Floating Fullscreen Controls Bar -->
-      <div class="fs-floating-bar" id="fs-floating-bar">
-        <button type="button" id="btn-fs-paste" class="touch-btn">📋 Paste</button>
-        <button type="button" id="btn-fs-zoom" class="touch-btn">🔍 Zoom (F5)</button>
-        <button type="button" id="btn-fs-aspect" class="touch-btn">Fit 4:3</button>
-        <button type="button" id="btn-fs-exit" class="touch-btn">❌ Exit (Esc)</button>
-      </div>
     </div>
 
     <!-- Mobile Touch / Action Bar -->
@@ -1092,7 +1086,7 @@ void main() {
       <details class="faq-item" open>
         <summary class="faq-question">How do I paste code into Turbo C++ without typing?</summary>
         <div class="faq-answer">
-          Click the <strong>Paste Code</strong> button at the top (or press <code>Shift+Insert</code> / <code>Ctrl+Shift+V</code>). Paste your C or C++ code into the box, choose a target filename (e.g., <code>CODE.CPP</code>), and click <strong>Insert into Turbo C++</strong>. The code will be saved directly into the DOS filesystem and loaded into the editor in under 0.3 seconds.
+          Click the <strong>Paste Code (for mobile users)</strong> button at the top (or press <code>Shift+Insert</code> / <code>Ctrl+Shift+V</code>). Paste your C or C++ code into the box, choose a target filename (e.g., <code>CODE.CPP</code>), and click <strong>Insert into Turbo C++</strong>. The code will be saved directly into the DOS filesystem and loaded into the editor in under 0.3 seconds.
         </div>
       </details>
 
@@ -1191,7 +1185,6 @@ const fileImporter = document.getElementById("file-importer");
 // Action Buttons
 const btnOpenPaste = document.getElementById("btn-open-paste");
 const btnImportFile = document.getElementById("btn-import-file");
-const btnZoomEditor = document.getElementById("btn-zoom-editor");
 const btnToggleFs = document.getElementById("btn-toggle-fs");
 const modalCloseBtn = document.getElementById("modal-close-btn");
 const modalCancelBtn = document.getElementById("modal-cancel-btn");
@@ -1208,12 +1201,6 @@ const tbZoom = document.getElementById("tb-zoom");
 const tbSave = document.getElementById("tb-save");
 const tbOpen = document.getElementById("tb-open");
 const tbEsc = document.getElementById("tb-esc");
-
-// Fullscreen Floating Bar Buttons
-const btnFsPaste = document.getElementById("btn-fs-paste");
-const btnFsZoom = document.getElementById("btn-fs-zoom");
-const btnFsAspect = document.getElementById("btn-fs-aspect");
-const btnFsExit = document.getElementById("btn-fs-exit");
 
 // Global State
 let dosboxInstance = null;
@@ -1574,11 +1561,9 @@ async function triggerZoom() {
   await pressDosKey(KBD.F5, false, 25, 60);
   showToast("Zoom Toggled (F5)");
 }
-if (btnZoomEditor) btnZoomEditor.addEventListener("click", triggerZoom);
-if (btnFsZoom) btnFsZoom.addEventListener("click", triggerZoom);
 
 // ============================================================================
-// 4. FULLSCREEN SYSTEM
+// 4. FULLSCREEN SYSTEM (100% Edge-to-Edge)
 // ============================================================================
 function toggleFullscreen() {
   const isFs = document.body.classList.toggle("is-fullscreen");
@@ -1605,15 +1590,6 @@ function exitFullscreen() {
 }
 
 if (btnToggleFs) btnToggleFs.addEventListener("click", toggleFullscreen);
-if (btnFsExit) btnFsExit.addEventListener("click", exitFullscreen);
-
-if (btnFsAspect) {
-  btnFsAspect.addEventListener("click", () => {
-    const isFit = document.body.classList.toggle("aspect-fit");
-    btnFsAspect.textContent = isFit ? "Stretch Full" : "Fit 4:3";
-    showToast(isFit ? "Mode: 4:3 Aspect Fit" : "Mode: Full Stretch");
-  });
-}
 
 document.addEventListener("fullscreenchange", () => {
   if (!document.fullscreenElement && document.body.classList.contains("is-fullscreen")) {
