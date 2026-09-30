@@ -194,4 +194,30 @@ describe('Service Worker URL validation', () => {
     expect(() => fetchListener(chromeExtEvent)).not.toThrow();
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
+
+  it('should identify status 206 and Vary: * responses as uncacheable in isCacheable', () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+    const extractIsCacheable = new Function(swCode + '\nreturn isCacheable;');
+    const isCacheable = extractIsCacheable();
+
+    const createMockResponse = (ok, status, headersObj = {}) => ({
+      ok,
+      status,
+      headers: {
+        get: (headerName) => headersObj[headerName] || null
+      }
+    });
+
+    // Standard 200 OK response - cacheable
+    expect(isCacheable(createMockResponse(true, 200, { 'Cache-Control': 'max-age=3600' }))).toBe(true);
+
+    // 206 Partial Content - uncacheable
+    expect(isCacheable(createMockResponse(true, 206))).toBe(false);
+
+    // Vary: * header - uncacheable
+    expect(isCacheable(createMockResponse(true, 200, { 'Vary': '*' }))).toBe(false);
+
+    // Cache-Control: no-store - uncacheable
+    expect(isCacheable(createMockResponse(true, 200, { 'Cache-Control': 'no-store' }))).toBe(false);
+  });
 });
