@@ -19,7 +19,9 @@ const FILES_TO_CACHE = [
 
 // Helper to prevent caching non-OK or uncacheable responses (e.g., Cache-Control: no-store, no-cache, private)
 function isCacheable(response) {
-  if (!response || !response.ok) return false;
+  if (!response || !response.ok || response.status === 206) return false;
+  const vary = response.headers.get("Vary");
+  if (vary && vary.includes("*")) return false;
   const cacheControl = response.headers.get("Cache-Control");
   if (cacheControl) {
     const lc = cacheControl.toLowerCase();
