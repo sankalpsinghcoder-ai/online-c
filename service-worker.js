@@ -17,9 +17,11 @@ const FILES_TO_CACHE = [
   "https://cdn.jsdelivr.net/npm/js-dos@8.4.1/dist/js-dos.css"
 ];
 
-// Helper to prevent caching non-OK or uncacheable responses (e.g., Cache-Control: no-store, no-cache, private)
+// Helper to prevent caching non-OK or uncacheable responses (e.g., status 206, Vary: *, Cache-Control: no-store, no-cache, private)
 function isCacheable(response) {
-  if (!response || !response.ok) return false;
+  if (!response || !response.ok || response.status === 206) return false;
+  const vary = response.headers.get("Vary");
+  if (vary && vary.includes("*")) return false;
   const cacheControl = response.headers.get("Cache-Control");
   if (cacheControl) {
     const lc = cacheControl.toLowerCase();
@@ -114,7 +116,8 @@ self.addEventListener("fetch", event => {
       if (cached) {
         fetch(event.request).then(response => {
           if (isCacheable(response)) {
-            getCache().then(cache => cache.put(event.request, response.clone()));
+            const copy = response.clone();
+            getCache().then(cache => cache.put(event.request, copy));
           }
         }).catch(err => console.warn("SW background fetch failed:", event.request.url, err));
         return cached;

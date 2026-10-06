@@ -195,3 +195,46 @@ describe('Service Worker URL validation', () => {
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
 });
+
+describe('Service Worker caching rules', () => {
+  it('should correctly identify non-cacheable responses (status 206, Vary: *, no-store)', () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+
+    const isCacheableMatch = swCode.match(/function isCacheable\(response\) \{[\s\S]*?\n\}/);
+    expect(isCacheableMatch).not.toBeNull();
+
+    const isCacheable = new Function('response', isCacheableMatch[0] + '\nreturn isCacheable(response);');
+
+    // HTTP 200 normal response
+    const validResponse = {
+      ok: true,
+      status: 200,
+      headers: { get: (h) => null }
+    };
+    expect(isCacheable(validResponse)).toBe(true);
+
+    // HTTP 206 Partial Content response (ok is true in fetch spec for 206)
+    const partialResponse = {
+      ok: true,
+      status: 206,
+      headers: { get: (h) => null }
+    };
+    expect(isCacheable(partialResponse)).toBe(false);
+
+    // Vary: * response
+    const varyStarResponse = {
+      ok: true,
+      status: 200,
+      headers: { get: (h) => (h === 'Vary' ? '*' : null) }
+    };
+    expect(isCacheable(varyStarResponse)).toBe(false);
+
+    // Cache-Control: no-store response
+    const noStoreResponse = {
+      ok: true,
+      status: 200,
+      headers: { get: (h) => (h === 'Cache-Control' ? 'no-store, private' : null) }
+    };
+    expect(isCacheable(noStoreResponse)).toBe(false);
+  });
+});
