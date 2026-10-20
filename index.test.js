@@ -194,4 +194,39 @@ describe('Service Worker URL validation', () => {
     expect(() => fetchListener(chromeExtEvent)).not.toThrow();
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
+
+  it('should not cache responses with status 206 or Vary: *', () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+
+    // Extract isCacheable function from SW code using Function evaluation
+    const isCacheableFn = new Function(`${swCode}\nreturn isCacheable;`)();
+
+    // Partial Content (206) response
+    const partialResponse = {
+      ok: true,
+      status: 206,
+      headers: { get: () => null }
+    };
+    expect(isCacheableFn(partialResponse)).toBe(false);
+
+    // Response with Vary: *
+    const varyStarResponse = {
+      ok: true,
+      status: 200,
+      headers: {
+        get: (header) => (header === 'Vary' ? '*' : null)
+      }
+    };
+    expect(isCacheableFn(varyStarResponse)).toBe(false);
+
+    // Valid cacheable 200 OK response
+    const validResponse = {
+      ok: true,
+      status: 200,
+      headers: {
+        get: (header) => (header === 'Cache-Control' ? 'max-age=3600' : null)
+      }
+    };
+    expect(isCacheableFn(validResponse)).toBe(true);
+  });
 });
