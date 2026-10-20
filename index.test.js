@@ -195,3 +195,38 @@ describe('Service Worker URL validation', () => {
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
 });
+
+describe('Service Worker caching logic', () => {
+  it('should identify HTTP 206 Partial Content and Vary: * responses as uncacheable', () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+
+    const runSW = new Function('self', 'caches', 'fetch', `${swCode}; return isCacheable;`);
+    const isCacheable = runSW({ addEventListener: jest.fn(), location: { origin: 'https://example.com' } }, {}, jest.fn());
+
+    // Normal 200 OK response
+    const valid200 = {
+      ok: true,
+      status: 200,
+      headers: { get: () => null }
+    };
+    expect(isCacheable(valid200)).toBe(true);
+
+    // Partial Content 206 response
+    const partial206 = {
+      ok: true,
+      status: 206,
+      headers: { get: () => null }
+    };
+    expect(isCacheable(partial206)).toBe(false);
+
+    // Response with Vary: *
+    const varyStar = {
+      ok: true,
+      status: 200,
+      headers: {
+        get: (header) => header.toLowerCase() === 'vary' ? '*' : null
+      }
+    };
+    expect(isCacheable(varyStar)).toBe(false);
+  });
+});
