@@ -194,4 +194,52 @@ describe('Service Worker URL validation', () => {
     expect(() => fetchListener(chromeExtEvent)).not.toThrow();
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
+
+  it('should clone response synchronously before cache put during asset fetch', async () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+
+    let fetchListener;
+    const selfMock = {
+      addEventListener: (event, callback) => {
+        if (event === 'fetch') fetchListener = callback;
+      },
+      location: { origin: 'https://sankalpsinghcoder-ai.github.io' }
+    };
+
+    const mockCache = {
+      put: jest.fn().mockResolvedValue(undefined)
+    };
+    const cachesMock = {
+      open: jest.fn().mockResolvedValue(mockCache),
+      match: jest.fn().mockResolvedValue(null)
+    };
+
+    const clonedResponseMock = { headers: { get: () => null }, ok: true };
+    const responseMock = {
+      ok: true,
+      headers: { get: () => null },
+      clone: jest.fn().mockReturnValue(clonedResponseMock)
+    };
+    const fetchMock = jest.fn().mockResolvedValue(responseMock);
+
+    const runSW = new Function('self', 'caches', 'fetch', swCode);
+    runSW(selfMock, cachesMock, fetchMock);
+
+    let respondWithPromise;
+    const event = {
+      request: {
+        method: 'GET',
+        url: 'https://sankalpsinghcoder-ai.github.io/online-c/turboc.jsdos',
+        mode: 'cors',
+        destination: 'script'
+      },
+      respondWith: jest.fn((p) => { respondWithPromise = p; })
+    };
+
+    fetchListener(event);
+    await respondWithPromise;
+
+    expect(responseMock.clone).toHaveBeenCalled();
+    expect(mockCache.put).toHaveBeenCalledWith(event.request, clonedResponseMock);
+  });
 });
