@@ -114,7 +114,8 @@ self.addEventListener("fetch", event => {
       if (cached) {
         fetch(event.request).then(response => {
           if (isCacheable(response)) {
-            getCache().then(cache => cache.put(event.request, response.clone()));
+            const copy = response.clone();
+            getCache().then(cache => cache.put(event.request, copy));
           }
         }).catch(err => console.warn("SW background fetch failed:", event.request.url, err));
         return cached;

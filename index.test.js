@@ -194,4 +194,68 @@ describe('Service Worker URL validation', () => {
     expect(() => fetchListener(chromeExtEvent)).not.toThrow();
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
+
+  it('should clone response synchronously before awaiting getCache in fetch handlers', async () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+
+    let fetchListener;
+    let cachePutCalled = false;
+    let cloneCalled = false;
+
+    const mockResponse = {
+      ok: true,
+      headers: { get: () => null },
+      clone: jest.fn().mockImplementation(() => {
+        cloneCalled = true;
+        return { cloned: true };
+      })
+    };
+
+    const mockCache = {
+      put: jest.fn().mockImplementation(() => {
+        cachePutCalled = true;
+      })
+    };
+
+    const mockCaches = {
+      match: jest.fn().mockResolvedValue(null),
+      open: jest.fn().mockResolvedValue(mockCache),
+      keys: jest.fn().mockResolvedValue([])
+    };
+
+    const mockFetch = jest.fn().mockResolvedValue(mockResponse);
+
+    const selfMock = {
+      addEventListener: (event, callback) => {
+        if (event === 'fetch') fetchListener = callback;
+      },
+      location: { origin: 'https://sankalpsinghcoder-ai.github.io' }
+    };
+
+    // Override fetch inside closure by replacing 'fetch(' in swCode with 'myFetch('
+    const testSWCode = swCode.replaceAll('fetch(', 'myFetch(');
+    const runSW = new Function('self', 'caches', 'myFetch', testSWCode);
+    runSW(selfMock, mockCaches, mockFetch);
+
+    let handlePromise;
+    const event = {
+      request: {
+        method: 'GET',
+        url: 'https://sankalpsinghcoder-ai.github.io/online-c/icon-1-48.png',
+        destination: 'script'
+      },
+      respondWith: jest.fn().mockImplementation(promise => {
+        handlePromise = promise;
+      })
+    };
+
+    fetchListener(event);
+
+    await handlePromise;
+
+    expect(mockFetch).toHaveBeenCalled();
+    expect(mockResponse.clone).toHaveBeenCalled();
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(cachePutCalled).toBe(true);
+  });
 });
