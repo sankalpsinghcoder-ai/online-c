@@ -194,4 +194,35 @@ describe('Service Worker URL validation', () => {
     expect(() => fetchListener(chromeExtEvent)).not.toThrow();
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
+
+  it('should exclude status 206 and Vary: * responses from caching', () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+
+    // Extract isCacheable function using Function constructor / evaluation
+    const isCacheableFn = new Function(`${swCode}\nreturn isCacheable;`)();
+
+    // Normal valid response
+    const validResponse = {
+      ok: true,
+      status: 200,
+      headers: { get: (header) => null }
+    };
+    expect(isCacheableFn(validResponse)).toBe(true);
+
+    // HTTP 206 Partial Content (ok is true in fetch API for 206)
+    const partialResponse = {
+      ok: true,
+      status: 206,
+      headers: { get: (header) => null }
+    };
+    expect(isCacheableFn(partialResponse)).toBe(false);
+
+    // Vary: * header
+    const varyStarResponse = {
+      ok: true,
+      status: 200,
+      headers: { get: (header) => (header.toLowerCase() === 'vary' ? '*' : null) }
+    };
+    expect(isCacheableFn(varyStarResponse)).toBe(false);
+  });
 });
