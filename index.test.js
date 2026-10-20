@@ -194,4 +194,79 @@ describe('Service Worker URL validation', () => {
     expect(() => fetchListener(chromeExtEvent)).not.toThrow();
     expect(chromeExtEvent.respondWith).not.toHaveBeenCalled();
   });
+
+  it('should not cache HTTP 206 Partial Content or Vary: * responses', async () => {
+    const swCode = fs.readFileSync(path.resolve(__dirname, 'service-worker.js'), 'utf8');
+
+    let fetchListener;
+    const selfMock = {
+      addEventListener: (event, callback) => {
+        if (event === 'fetch') fetchListener = callback;
+      },
+      location: { origin: 'https://sankalpsinghcoder-ai.github.io' }
+    };
+
+    const mockPut = jest.fn();
+    const mockCache = { put: mockPut };
+    const mockCaches = {
+      open: jest.fn().mockResolvedValue(mockCache),
+      match: jest.fn().mockResolvedValue(null)
+    };
+
+    const runSW = new Function('self', 'caches', 'fetch', swCode);
+
+    const fetchMock = jest.fn();
+    runSW(selfMock, mockCaches, fetchMock);
+
+    // Test status 206 response
+    const mockResponse206 = {
+      ok: true,
+      status: 206,
+      headers: { get: () => null },
+      clone: jest.fn().mockReturnThis()
+    };
+    fetchMock.mockResolvedValueOnce(mockResponse206);
+
+    let respondWithPromise;
+    const event206 = {
+      request: {
+        method: 'GET',
+        url: 'https://sankalpsinghcoder-ai.github.io/online-c/asset.js',
+        mode: 'cors',
+        destination: 'script'
+      },
+      respondWith: jest.fn(p => { respondWithPromise = p; })
+    };
+
+    fetchListener(event206);
+    await respondWithPromise;
+
+    expect(mockResponse206.clone).not.toHaveBeenCalled();
+    expect(mockPut).not.toHaveBeenCalled();
+
+    // Test Vary: * response
+    const mockResponseVary = {
+      ok: true,
+      status: 200,
+      headers: { get: (name) => (name === 'Vary' ? '*' : null) },
+      clone: jest.fn().mockReturnThis()
+    };
+    fetchMock.mockResolvedValueOnce(mockResponseVary);
+
+    const eventVary = {
+      request: {
+        method: 'GET',
+        url: 'https://sankalpsinghcoder-ai.github.io/online-c/asset2.js',
+        mode: 'cors',
+        destination: 'script'
+      },
+      respondWith: jest.fn(p => { respondWithPromise = p; })
+    };
+
+    fetchListener(eventVary);
+    await respondWithPromise;
+
+    expect(mockResponseVary.clone).not.toHaveBeenCalled();
+    expect(mockPut).not.toHaveBeenCalled();
+  });
 });
