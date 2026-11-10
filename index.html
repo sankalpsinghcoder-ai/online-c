@@ -1831,8 +1831,6 @@ body, .chat-msg, .chat-text, .chat-meta, .doc-card, .center-popup-body,
   body:not(.is-fullscreen) #tb-paste { display: none; }
 
   .saved-item-hint { font-size: .7rem; color: #8c979a; white-space: nowrap; margin-left: 10px; align-self: center; }
-
-  #dos-wrapper { touch-action: none; }
   
 </style>
 </head>
@@ -3676,71 +3674,6 @@ document.getElementById("saved-inject-btn").addEventListener("click", async () =
   ["keydown", "keyup", "keypress"].forEach((t) => hiddenInput.addEventListener(t, (e) => e.stopPropagation()));
 })();
 
-
-// ============================================================================
-// SCROLL INSIDE THE EDITOR: mouse wheel + touch swipe -> Up/Down arrow keys
-// ============================================================================
-(function () {
-  const wrap = document.getElementById("dos-wrapper");
-  if (!wrap) return;
-
-  const WHEEL_PX = 40;   // wheel movement needed for 1 line (lower = faster)
-  const TOUCH_PX = 18;   // finger movement needed for 1 line (lower = faster)
-
-  let pending = 0, running = false, wheelAcc = 0, touchAcc = 0, lastY = 0;
-
-  // The cover over the menu bar is "solid" only while the editor is on screen
-  function editorVisible() {
-    return shieldTop && shieldTop.classList.contains("solid");
-  }
-
-  async function pump() {
-    if (running) return;
-    running = true;
-    try {
-      while (pending !== 0) {
-        if (!dosCi || actionBusy || isBusy()) { pending = 0; break; }
-        const up = pending < 0;
-        pending += up ? 1 : -1;
-        await pressDosKey(up ? 265 : 264, false, 12, 8);   // 265 = Up, 264 = Down
-      }
-    } finally { running = false; }
-  }
-
-  function scrollLines(n) {       // n > 0 scrolls down, n < 0 scrolls up
-    if (!n || !dosCi || !editorVisible()) return;
-    pending = Math.max(-60, Math.min(60, pending + n));
-    pump();
-  }
-
-  // Mouse wheel / trackpad
-  wrap.addEventListener("wheel", (e) => {
-    if (!editorVisible()) return;          // on the output screen, let the page scroll normally
-    e.preventDefault();
-    wheelAcc += e.deltaY * (e.deltaMode === 1 ? 16 : 1);
-    const lines = Math.trunc(wheelAcc / WHEEL_PX);
-    wheelAcc -= lines * WHEEL_PX;
-    scrollLines(lines);
-  }, { passive: false });
-
-  // Touch swipe: content follows your finger
-  wrap.addEventListener("touchstart", (e) => {
-    const t = e.touches[0]; if (!t) return;
-    lastY = t.clientY; touchAcc = 0;
-  }, { passive: true, capture: true });
-
-  wrap.addEventListener("touchmove", (e) => {
-    const t = e.touches[0]; if (!t) return;
-    touchAcc += t.clientY - lastY;
-    lastY = t.clientY;
-    const steps = Math.trunc(touchAcc / TOUCH_PX);
-    if (steps) {
-      touchAcc -= steps * TOUCH_PX;
-      scrollLines(-steps);                 // finger down = see earlier lines = Up arrow
-    }
-  }, { passive: true, capture: true });
-})();
-  
   
 // ============================================================================
 // MOUSE FIX: Natural mouse tracking without breaking output screen state
