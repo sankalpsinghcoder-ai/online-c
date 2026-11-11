@@ -2917,22 +2917,59 @@ function withTimeout(p, ms) {
   return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
 }
 
+// One read per file at a time (js-dos throws if the same file is requested twice)
+const pendingReads = {};
+function readDosFileOnce(name) {
+  if (!pendingReads[name]) {
+    pendingReads[name] = Promise.resolve(dosCi.fsReadFile(name))
+      .finally(() => { delete pendingReads[name]; });
+  }
+  return pendingReads[name];
+}
+
 async function readDosFile(name) {
-  try { return await withTimeout(dosCi.fsReadFile(name), 1500); } catch (e) {}
-  const tree = await withTimeout(dosCi.fsTree(), 1500);
+  try { return await withTimeout(readDosFileOnce(name), 4000); } catch (e) {}
+  const tree = await withTimeout(dosCi.fsTree(), 2000);
   const hit = ((tree && tree.nodes) || []).find((n) => !n.nodes && n.name.toUpperCase() === name.toUpperCase());
   if (!hit) throw new Error(name + " was not found");
-  return await withTimeout(dosCi.fsReadFile(hit.name), 1500);
+  return await withTimeout(readDosFileOnce(hit.name), 4000);
+}
+
+// Is a grey Turbo C++ dialog (Save File As, overwrite question...) on screen?
+async function isDialogOpen() {
+  if (!dosCi || typeof dosCi.screenshot !== "function") return null;
+  try {
+    const img = await dosCi.screenshot();
+    if (!img || !img.data) return null;
+    const pts = [[0.72, 0.45], [0.5, 0.5], [0.5, 0.4], [0.35, 0.55], [0.6, 0.6]];
+    let grey = 0;
+    for (const [fx, fy] of pts) {
+      const i = (Math.floor(img.height * fy) * img.width + Math.floor(img.width * fx)) * 4;
+      if (Math.abs(img.data[i] - 170) < 25 && Math.abs(img.data[i + 1] - 170) < 25 && Math.abs(img.data[i + 2] - 170) < 25) grey++;
+    }
+    return grey >= 2;
+  } catch (e) { return null; }
 }
 
 async function readCurrentFile() {
   if (!lastDosFilename) return null;
   await prepDos();
   await pressDosKey(KBD.F2, false, 25, 500);
+
+  // NONAMExx.CPP opens "Save File As": press Enter (OK) until the dialog is gone
+  const dlg = await isDialogOpen();
+  if (dlg === null) {
+    if (/^NONAME\d+\.CPP$/i.test(lastDosFilename)) await pressDosKey(KBD.ENTER, false, 25, 500);   // no screenshots: best guess
+  } else {
+    for (let i = 0; i < 3 && await isDialogOpen(); i++) {
+      await pressDosKey(KBD.ENTER, false, 25, 450);
+    }
+  }
+
   let bytes = null, lastErr = null;
-  for (let i = 0; i < 4 && !bytes; i++) {
+  for (let i = 0; i < 3 && !bytes; i++) {
     try { bytes = await readDosFile(lastDosFilename); }
-    catch (e) { lastErr = e; await delay(150); }
+    catch (e) { lastErr = e; await delay(200); }
   }
   if (!bytes) throw lastErr || new Error("Could not read " + lastDosFilename);
   return new TextDecoder("utf-8").decode(bytes);
