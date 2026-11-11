@@ -4440,13 +4440,23 @@ if ("serviceWorker" in navigator) {
     if (el) el.remove();
   });
 
+  const NOTIFY_URL = "google-search-console-mcp.sankalpsinghcoder.workers.dev";   // your Worker URL
+
   function sendMessage(text, isProblem = false) {
     if (!text || !myUsername) return;
     const ref = isProblem ? problemsRef : messagesRef;
-    ref.push({
+    const pushed = ref.push({
       name: myUsername,
       text: text.slice(0, 300),
       ts: firebase.database.ServerValue.TIMESTAMP
+    });
+    pushed.then(() => {
+      fetch(NOTIFY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: pushed.key, ref: isProblem ? "problems" : "messages" }),
+        keepalive: true
+      }).catch(() => {});
     }).catch((err) => console.warn("Send error:", err));
   }
 
