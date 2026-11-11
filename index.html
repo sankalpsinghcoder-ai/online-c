@@ -2724,6 +2724,11 @@ function ensureWorkspace() {
     } finally {
       bootOverlay = false;
       if (ownBusy && !actionBusy) hideBusy();
+      if (ownBusy && !lastDosFilename) {
+        setTimeout(() => {
+          if (!lastDosFilename && !actionBusy) runAction(ACTION_BY_ID.new);
+        }, 100);
+      }
       if (window.showBarTour) setTimeout(window.showBarTour, 1500);
     }
   })();
