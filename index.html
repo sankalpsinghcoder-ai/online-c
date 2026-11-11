@@ -1862,16 +1862,12 @@ body.is-fullscreen canvas { top: var(--fs-bar-h) !important; bottom: 0 !importan
 .bt-title { font-family:var(--font-mono); font-weight:700; color:var(--cyan-accent); font-size:1rem; }
 .bt-text { font-size:.88rem; line-height:1.5; color:#fff; }
 
-body.classic-mode .dos-shield { display: none !important; }
-body.classic-mode .touch-btn:not(#tb-paste):not(#tb-switch) { display: none !important; }
+  .menu-zone { position:absolute; display:none; z-index:210; cursor:pointer; background:transparent; }
+#file-menu { display:none; position:fixed; z-index:1000150; background:#14181f; border:2px solid var(--cyan-accent); border-radius:8px; padding:4px; box-shadow:0 10px 30px rgba(0,0,0,.9); }
+#file-menu button { display:block; width:100%; text-align:left; background:none; border:none; color:#fff; font:600 .85rem var(--font-mono); padding:9px 14px; cursor:pointer; border-radius:5px; }
+#file-menu button:hover { background:var(--teal-accent); color:#000; }
 
-#emulator-card.flip { animation: cardFlip .6s ease-in-out; }
-@keyframes cardFlip {
-  0%     { transform: perspective(1200px) rotateY(0); }
-  50%    { transform: perspective(1200px) rotateY(90deg); }
-  50.01% { transform: perspective(1200px) rotateY(-90deg); }
-  100%   { transform: perspective(1200px) rotateY(0); }
-}
+  #dos-wrapper { touch-action: none; }
   
 </style>
 </head>
@@ -2009,14 +2005,13 @@ body.classic-mode .touch-btn:not(#tb-paste):not(#tb-switch) { display: none !imp
   <!-- Action / Feature Toolbar -->
   <div class="ide-toolbar">
     <button type="button" id="btn-open-paste" class="tool-btn" title="Paste C/C++ Code (Shift+Insert or Ctrl+Shift+V)">
-      📂 <span>Write/Paste/Import Code</span>
+      📂 <span>Write/Import/Paste/Copy Code</span>
     </button>
     <button type="button" id="btn-toggle-fs" class="tool-btn" title="Toggle Fullscreen (F11)">
       ⛶ <span>Fullscreen: F11</span>
     </button>
     <!-- Top Right Saved Programs -->
     <button type="button" class="tool-btn" id="btn-open-saved">💾 My Saved Programs</button>
-    <button type="button" class="tool-btn" id="btn-mode">🔄 <span>Switch to Classic (Menu)</span></button>
   </div>
 
   <!-- Start Emulator Button -->
@@ -2036,6 +2031,10 @@ body.classic-mode .touch-btn:not(#tb-paste):not(#tb-switch) { display: none !imp
       <div id="dos" tabindex="0"></div>
       <div class="dos-shield" id="dos-shield-top"><span id="dos-filename">TURBO C++ 3.2</span></div>
       <div class="dos-shield" id="dos-shield-bottom"></div>
+      <div class="menu-zone" data-k="sys" data-a="0" data-b="4"></div>
+      <div class="menu-zone" data-k="file" data-a="4" data-b="10"></div>
+      <div class="menu-zone" data-k="run" data-a="24" data-b="29"></div>
+      <div class="menu-zone" data-k="run" data-a="29" data-b="38"></div>
     </div>
   </div>
   
@@ -2194,10 +2193,18 @@ void main() {
   <div id="bar-tour">
   <div id="bar-tour-spot"></div>
   <div id="bar-tour-card">
-    <div class="bt-title">👆 Use these buttons!</div>
-    <div class="bt-text">Everything is done with this button bar: create a <b>New</b> file, <b>Open</b> saved programs, <b>Save</b>, <b>Run</b>, view <b>Output</b>, <b>Clear</b>, <b>Undo</b>, <b>Redo</b> and <b>Download</b>. The compiler's own menu is locked, so please use these buttons.</div>
+    <div class="bt-title">👆 You can control the compiler from here also!</div>
+    <div class="bt-text">Use this button bar to <b>Open</b> saved programs, <b>Save</b>, <b>Run</b>, view <b>Output</b>, <b>Clear</b> and <b>Download</b>. The <b>File</b> and <b>Run</b> menu inside the compiler are connected to these same buttons, so they work the same way.</div>
     <button type="button" id="bar-tour-ok" class="btn-inject" style="margin-left:auto;">Got it</button>
   </div>
+</div>
+  <div id="file-menu">
+  <button type="button" data-id="new">📄 New</button>
+  <button type="button" data-id="open">📂 Open</button>
+  <button type="button" data-id="save">💾 Save</button>
+  <button type="button" data-id="saveas">📝 Save As</button>
+  <button type="button" data-id="download">⬇️ Download</button>
+</div>
 </div>
   
   <!-- Toast Notification Box -->
@@ -3122,7 +3129,7 @@ async function injectCodeIntoDos() {
 }
 
 // Modal Buttons
-if (btnOpenPaste) btnOpenPaste.addEventListener("click", openModal);
+if (btnOpenPaste) btnOpenPaste.addEventListener("click", () => runAction(ACTION_BY_ID.paste));
 if (modalCloseBtn) modalCloseBtn.addEventListener("click", closeModal);
 if (modalCancelBtn) modalCancelBtn.addEventListener("click", closeModal);
 if (btnInjectCode) btnInjectCode.addEventListener("click", injectCodeIntoDos);
@@ -3305,27 +3312,33 @@ async function actRedo() { focusDos(); await dosCombo([KBD.LSHIFT, KBD.LALT], KB
 
 async function actDownload() { await openDownloadDialog(); }
 
-function actPaste() { openModal(); }
-
-function actSwitch() { return switchMode(); }
+async function actPaste() {
+  if (!ensureCompilerStarted()) return;
+  if (!lastDosFilename) { openModal(); return; }        // no file open yet: normal empty box
+  let text = "";
+  const ok = await exclusive("Reading your code...", async () => {
+    text = (await readCurrentFile()) || "";
+  });
+  if (!ok) return;
+  pasteCodeInput.value = text;                           // exact text in the editor
+  injectFilenameInput.value = lastDosFilename;           // the file that is open right now
+  openModal();
+}
 
 // id      : button id is "tb-" + id (or "dom" if given)
 // busy    : text of the "Please wait" popup. Give it to anything that sends many keys.
 // needsFile: button does nothing until a file is open
 // hint    : shortcut shown on the button (hidden on small phones)
 const ACTIONS = [
-  { id: "paste", icon: "📂", label: "Write/Paste/Import", direct: true, run: actPaste },
-  { id: "new",      icon: "📄", label: "New",      busy: "Creating a new file...", run: actNew },
+  { id: "paste",    icon: "📂", label: "Write/Import/Paste/Copy", direct: true, run: actPaste },
+  { id: "new",      icon: "📄", label: "New", busy: "Creating a new file...", run: actNew },
   { id: "open",     icon: "📂", label: "Open",     run: actOpen },
   { id: "save",     icon: "💾", label: "Save", hint: "F2", needsFile: true, busy: "Reading your code...", run: actSaveAs },
   { id: "saveas",   icon: "📝", label: "Save As",  needsFile: true, busy: "Reading your code...", run: actSaveAs },
   { id: "run",      icon: "▶️", label: "Run",      hint: "Ctrl+F9", needsFile: true, run: actRun },
   { id: "output",   dom: "tb-userscreen", icon: "🖥️", label: "Output", hint: "Alt+F5", run: actOutput },
   { id: "clear",    icon: "🧹", label: "Clear",    needsFile: true, busy: "Clearing the editor...", run: actClear },
-  { id: "undo",     icon: "↩️", label: "Undo",     needsFile: true, run: actUndo },
-  { id: "redo",     icon: "↪️", label: "Redo",     needsFile: true, run: actRedo },
   { id: "download", icon: "⬇️", label: "Download", needsFile: true, busy: "Reading your code...", run: actDownload },
-  { id: "switch", icon: "🔄", label: "Classic", direct: true, run: actSwitch }
 ];
 const ACTION_BY_ID = {};
 
@@ -3341,6 +3354,7 @@ function runAction(a) {
   if (!bar) return;
   ACTIONS.forEach((a) => {
     ACTION_BY_ID[a.id] = a;
+    if (a.hidden) return;
     const b = document.createElement("button");
     b.type = "button";
     b.className = "touch-btn";
@@ -3374,7 +3388,6 @@ function isLockedKey(e) {
 }
 
 window.addEventListener("keydown", (e) => {
-  if (document.body.classList.contains("classic-mode")) return;
   if (isLockedKey(e)) { e.preventDefault(); e.stopImmediatePropagation(); return; }
   // F2 (habit!) goes through our Save so the code is also kept in the browser
   if (e.key === "F2" && !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey) {
@@ -3410,16 +3423,23 @@ function layoutShields() {
     el.style.height = height + "px";
     el.style.display = "flex";
   };
-  place(shieldTop, 0, row * 2);
+  place(shieldTop, row, row);
   place(shieldBottom, row * 24, row);
+
+    document.querySelectorAll(".menu-zone").forEach((z) => {
+    const a = +z.dataset.a, b = +z.dataset.b;
+    z.style.left = (r.left - w.left + r.width * a / 80) + "px";
+    z.style.width = (r.width * (b - a) / 80) + "px";
+    z.style.top = (r.top - w.top) + "px";
+    z.style.height = row + "px";
+    z.style.display = "block";
+  });
 }
 
-function setShieldsSolid(on) {
-  if (shieldTop) shieldTop.classList.toggle("solid", on);
-  if (shieldBottom) shieldBottom.classList.toggle("solid", on);
-}
+function setShieldsSolid(on) {}
 
 // Is the Turbo C++ editor on screen? Its menu bar is a light-grey strip across row 0.
+let editorOnScreen = false;
 let screenFails = 0, screenReading = false;
 async function lookForEditor() {
   if (screenReading || actionBusy || !dosCi || document.hidden) return;
@@ -3436,7 +3456,7 @@ async function lookForEditor() {
       total++;
       if (Math.abs(img.data[i] - 170) < 30 && Math.abs(img.data[i + 1] - 170) < 30 && Math.abs(img.data[i + 2] - 170) < 30) grey++;
     }
-    setShieldsSolid(total > 0 && grey / total > 0.5);
+    editorOnScreen = total > 0 && grey / total > 0.5;
     screenFails = 0;
   } catch (e) {
     setShieldsSolid(false);                     // when unsure, show the picture (the menu stays locked anyway)
@@ -3909,7 +3929,7 @@ window.addEventListener("keydown", (e) => {
   if (isPaste) {
     if (e.target && e.target.closest && e.target.closest(".modal-dialog")) return;
     e.preventDefault();
-    openModal();
+    runAction(ACTION_BY_ID.paste);
     return;
   }
   if (e.key === "Escape") {
@@ -3927,6 +3947,16 @@ window.addEventListener("keydown", (e) => {
       e.preventDefault();
       exitFullscreen();
     }
+      if (e.key === "F9" && !e.shiftKey) {                 // F9, Ctrl+F9, Alt+F9
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (!e.repeat) runAction(ACTION_BY_ID.run);
+    return;
+  }
+  if (e.key === "F3" && !e.ctrlKey && !e.altKey) {     // Open
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (!e.repeat) runAction(ACTION_BY_ID.open);
+    return;
+  }
   }
 }, true);
 
@@ -4860,7 +4890,7 @@ if ("serviceWorker" in navigator) {
 
 <script>
 (function () {
-  const KEY = "tc_bar_tour_done";
+  const KEY = "tc_bar_tour_v2";
   const root = document.getElementById("bar-tour");
   const spot = document.getElementById("bar-tour-spot");
   const card = document.getElementById("bar-tour-card");
@@ -4922,58 +4952,157 @@ if ("serviceWorker" in navigator) {
 </script>
 
 <script>
-let classicMode = false;
+// File menu box: stays attached to the "File" button inside the compiler
+(function () {
+  const fm = document.getElementById("file-menu");
+  let anchor = null, raf = 0;
 
-function updateModeButtons() {
-  const t = document.querySelector("#btn-mode span");
-  if (t) t.textContent = classicMode ? "Switch to New Version" : "Switch to Classic (Menu)";
-  const b = document.getElementById("tb-switch");
-  if (b) b.textContent = classicMode ? "✨ New Version" : "🔄 Classic";
-}
-
-async function switchMode() {
-  if (actionBusy) { showToast("Please wait, an action is still running..."); return; }
-  const toClassic = !classicMode;
-  if (toClassic) {
-    let warned = false;
-    try { warned = !!localStorage.getItem("tc_classic_warned"); } catch (e) {}
-    if (!warned) {
-      if (!confirm("Classic mode shows the original Turbo C++ menu bar.\n\nIt can freeze more easily, and the buttons are mostly disabled. Alt+X quits Turbo C++ and needs a page reload.\n\nContinue?")) return;
-      try { localStorage.setItem("tc_classic_warned", "1"); } catch (e) {}
-    }
+  function hide() {
+    fm.style.display = "none";
+    anchor = null;
+    cancelAnimationFrame(raf);
   }
 
-  actionBusy = true;
-  emulatorCard.classList.remove("flip");
-  void emulatorCard.offsetWidth;
-  emulatorCard.classList.add("flip");
-  await delay(300);                               // the card is edge-on: swap modes now
-
-  try {
-    clearKeyMatrix();
-    if (!toClassic) { focusDos(); await dosEscapeAll(); }   // close any open menu or dialog
-    classicMode = toClassic;
-    document.body.classList.toggle("classic-mode", toClassic);
-    updateModeButtons();
-    if (toClassic) focusDos();
-  } finally {
-    actionBusy = false;
+  // Put the box right under the File button (runs every frame while the box is open)
+  function place() {
+    if (!anchor || fm.style.display !== "block") return;
+    const r = anchor.getBoundingClientRect();
+    const vv = window.visualViewport;
+    const vw = vv ? vv.width : window.innerWidth;
+    const vh = vv ? vv.height : window.innerHeight;
+    const gone = r.width === 0 || r.height === 0 || r.bottom < 0 || r.top > vh;   // File button hidden or scrolled away
+    if (gone) { hide(); return; }
+    const w = fm.offsetWidth, h = fm.offsetHeight;
+    let left = r.left, top = r.bottom + 4;
+    if (left + w > vw - 6) left = Math.max(6, vw - w - 6);
+    if (top + h > vh - 6) top = Math.max(6, r.top - h - 4);        // no room below: open above the button
+    fm.style.left = left + "px";
+    fm.style.top = top + "px";
+    raf = requestAnimationFrame(place);
   }
 
-  await delay(300);
-  emulatorCard.classList.remove("flip");
+  document.querySelectorAll(".menu-zone").forEach((z) => {
+    z.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!dosCi) return;
+      const k = z.dataset.k;
+      if (k === "run") { hide(); runAction(ACTION_BY_ID.run); return; }
+      if (k === "file") {
+        if (fm.style.display === "block") { hide(); return; }
+        anchor = z;
+        fm.style.display = "block";
+        place();
+      }
+    });
+  });
 
-  if (!toClassic) {
-    setCurrentFile(null);                         // we can't know which file the menu left open
-    runAction(ACTION_BY_ID.new);                  // land in a fresh, known file
+  fm.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    const a = ACTION_BY_ID[b.dataset.id];
+    hide();
+    if (a) runAction(a);
+  });
+
+  document.addEventListener("click", hide);
+  window.addEventListener("resize", () => { if (anchor) place(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") hide(); });
+})();
+</script>
+
+<script>
+// Mouse wheel / finger drag over the compiler moves the typing cursor with Up/Down keys
+(function () {
+  const wrap = document.getElementById("dos-wrapper");
+  const WHEEL_PX = 15;      // bigger number = slower
+  const TOUCH_PX = 14;
+  const LINES = 1;          // lines moved per step
+  let pending = 0, running = false, wAcc = 0, tAcc = 0, lastY = 0;
+
+  // Allowed whenever a file is open and no other action is running.
+  // (The old "editor is on screen" check is used only when it is known to be reliable.)
+  const canScroll = () => !!(dosCi && lastDosFilename && !actionBusy && !isBusy() &&
+    (typeof editorOnScreen === "undefined" || editorOnScreen || typeof dosCi.screenshot !== "function" || screenFails >= 3));
+
+  async function pump() {
+    if (running) return; running = true;
+    try {
+      while (pending !== 0) {
+        if (!canScroll()) { pending = 0; break; }
+        const up = pending < 0; pending += up ? 1 : -1;
+        await pressDosKey(up ? 265 : 264, false, 6, 4);     // Up / Down arrow
+      }
+    } finally { running = false; }
   }
-}
+  function scrollSteps(n) {
+    if (!n || !canScroll()) return;
+    pending = Math.max(-120, Math.min(120, pending + n * LINES));
+    pump();
+  }
 
-document.getElementById("btn-mode").addEventListener("click", () => {
-  if (!ensureCompilerStarted()) return;
-  switchMode();
-});
-updateModeButtons();
+  // Capture phase: runs before the emulator can swallow the wheel event
+  wrap.addEventListener("wheel", (e) => {
+    if (!dosBox.contains(e.target)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if (!canScroll()) return;
+    wAcc += e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1);
+    const s = Math.trunc(wAcc / WHEEL_PX); wAcc -= s * WHEEL_PX;
+    scrollSteps(s);
+  }, { passive: false, capture: true });
+
+  wrap.addEventListener("touchstart", (e) => { const t = e.touches[0]; if (t) { lastY = t.clientY; tAcc = 0; } }, { passive: true, capture: true });
+  wrap.addEventListener("touchmove", (e) => {
+    const t = e.touches[0]; if (!t) return;
+    tAcc += t.clientY - lastY; lastY = t.clientY;
+    const s = Math.trunc(tAcc / TOUCH_PX);
+    if (s) { tAcc -= s * TOUCH_PX; scrollSteps(-s); }
+  }, { passive: true, capture: true });
+})();
+</script>
+
+<script>
+// Fullscreen: make the PC mouse and the orange Turbo C++ cursor line up exactly
+(function () {
+  const FS_MOUSE_FIX = true;      // set to false to turn this off completely
+
+  function inFs() { return document.body.classList.contains("is-fullscreen"); }
+  function mapped(e) {
+    const c = dosBox.querySelector("canvas");
+    if (!c) return null;
+    const r = c.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    return {
+      x: Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)),
+      y: Math.min(1, Math.max(0, (e.clientY - r.top) / r.height))
+    };
+  }
+  function ours(e) {
+    return FS_MOUSE_FIX && inFs() && dosCi && e.pointerType === "mouse" && dosBox.contains(e.target);
+  }
+  function move(e) {
+    const p = mapped(e); if (!p) return;
+    try { dosCi.sendMouseMotion(p.x, p.y); } catch (x) {}
+  }
+
+  const wrap = document.getElementById("dos-wrapper");
+  wrap.addEventListener("pointermove", (e) => {
+    if (!ours(e)) return;
+    e.stopImmediatePropagation();
+    move(e);
+  }, true);
+  wrap.addEventListener("pointerdown", (e) => {
+    if (!ours(e)) return;
+    e.stopImmediatePropagation();
+    move(e);
+    try { dosCi.sendMouseButton(e.button === 2 ? 2 : e.button === 1 ? 1 : 0, true); } catch (x) {}
+  }, true);
+  wrap.addEventListener("pointerup", (e) => {
+    if (!ours(e)) return;
+    e.stopImmediatePropagation();
+    move(e);
+    try { dosCi.sendMouseButton(e.button === 2 ? 2 : e.button === 1 ? 1 : 0, false); } catch (x) {}
+  }, true);
+})();
 </script>
   
 </body>
