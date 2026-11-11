@@ -1831,6 +1831,36 @@ body, .chat-msg, .chat-text, .chat-meta, .doc-card, .center-popup-body,
   body:not(.is-fullscreen) #tb-paste { display: none; }
 
   .saved-item-hint { font-size: .7rem; color: #8c979a; white-space: nowrap; margin-left: 10px; align-self: center; }
+
+  body:not(.is-fullscreen) .direct-actions-card { border-top: none; border-bottom: 1px solid var(--teal-accent); }
+
+body.is-fullscreen .direct-actions-card {
+  top: 0 !important; bottom: auto !important;
+  border-top: none !important;
+  border-bottom: 1px solid var(--teal-accent) !important;
+  box-shadow: 0 4px 18px rgba(0,0,0,.8) !important;
+}
+body.is-fullscreen #emulator-card { top: 0 !important; bottom: 0 !important; height: 100vh !important; max-height: 100vh !important; }
+body.is-fullscreen #dos-wrapper,
+body.is-fullscreen #dos,
+body.is-fullscreen #dos canvas,
+body.is-fullscreen canvas { top: var(--fs-bar-h) !important; bottom: 0 !important; }
+
+#bar-tour { display:none; position:fixed; inset:0; z-index:1000200; }
+#bar-tour-spot {
+  position:fixed; border-radius:10px; border:2px solid var(--cyan-accent);
+  box-shadow:0 0 0 9999px rgba(5,7,10,.82), 0 0 22px 4px rgba(102,252,241,.7);
+  animation:tourPulse 1.4s infinite ease-in-out; pointer-events:none;
+}
+@keyframes tourPulse { 50% { box-shadow:0 0 0 9999px rgba(5,7,10,.82), 0 0 34px 10px rgba(102,252,241,1); } }
+#bar-tour-card {
+  position:fixed; display:flex; flex-direction:column; gap:10px;
+  width:min(380px, calc(100vw - 24px)); padding:16px;
+  background:#14181f; border:2px solid var(--cyan-accent); border-radius:10px;
+  box-shadow:0 12px 40px rgba(0,0,0,.9);
+}
+.bt-title { font-family:var(--font-mono); font-weight:700; color:var(--cyan-accent); font-size:1rem; }
+.bt-text { font-size:.88rem; line-height:1.5; color:#fff; }
   
 </style>
 </head>
@@ -1987,13 +2017,13 @@ body, .chat-msg, .chat-text, .chat-meta, .doc-card, .center-popup-body,
 
   <!-- Emulator Display Card -->
   <div id="emulator-card">
+    <div class="direct-actions-card" id="direct-actions-panel">
+      <div class="direct-actions-buttons" id="action-bar"></div>
+    </div>
     <div id="dos-wrapper">
       <div id="dos" tabindex="0"></div>
       <div class="dos-shield" id="dos-shield-top"><span id="dos-filename">TURBO C++ 3.2</span></div>
       <div class="dos-shield" id="dos-shield-bottom"></div>
-    </div>
-    <div class="direct-actions-card" id="direct-actions-panel">
-      <div class="direct-actions-buttons" id="action-bar"></div>
     </div>
   </div>
   
@@ -2148,6 +2178,15 @@ void main() {
       <div class="busy-note">Your code is being placed in the workspace. Please don't tap or type until this finishes.</div>
     </div>
   </div>
+
+  <div id="bar-tour">
+  <div id="bar-tour-spot"></div>
+  <div id="bar-tour-card">
+    <div class="bt-title">👆 Use these buttons!</div>
+    <div class="bt-text">Everything is done with this button bar: create a <b>New</b> file, <b>Open</b> saved programs, <b>Save</b>, <b>Run</b>, view <b>Output</b>, <b>Clear</b>, <b>Undo</b>, <b>Redo</b> and <b>Download</b>. The compiler's own menu is locked, so please use these buttons.</div>
+    <button type="button" id="bar-tour-ok" class="btn-inject" style="margin-left:auto;">Got it</button>
+  </div>
+</div>
   
   <!-- Toast Notification Box -->
   <div id="toast" class="toast-box">Ready</div>
@@ -2685,6 +2724,7 @@ function ensureWorkspace() {
     } finally {
       bootOverlay = false;
       if (ownBusy && !actionBusy) hideBusy();
+      if (window.showBarTour) setTimeout(window.showBarTour, 400);
     }
   })();
   return wsPromise;
@@ -2942,6 +2982,38 @@ async function fixBgiPath(code) {
   } catch (e) { return code; }
 }
 
+// true = editor window fills the screen, false = half open (desktop pattern visible below), null = unknown
+async function isWindowZoomed() {
+  if (!dosCi || typeof dosCi.screenshot !== "function") return null;
+  try {
+    const img = await dosCi.screenshot();
+    if (!img || !img.data) return null;
+    const y = Math.floor(img.height * 0.84);
+    const step = Math.max(1, Math.floor(img.width / 80));
+    let blue = 0, total = 0;
+    for (let x = 6; x < img.width - 30; x += step) {
+      const i = (y * img.width + x) * 4;
+      total++;
+      if (img.data[i] < 40 && img.data[i + 1] < 40 && img.data[i + 2] > 130) blue++;
+    }
+    return total > 0 && blue / total > 0.8;
+  } catch (e) { return null; }
+}
+
+async function ensureZoomed(firstTimeFallback) {
+  await delay(200);
+  let z = await isWindowZoomed();
+  if (z === null) {                       // screenshots unsupported: old behaviour
+    if (firstTimeFallback) await pressDosKey(KBD.F5, false, 25, 120);
+    return;
+  }
+  for (let i = 0; i < 3 && z === false; i++) {
+    await pressDosKey(KBD.F5, false, 25, 250);
+    await delay(150);
+    z = await isWindowZoomed();
+  }
+}
+
   
 // THE one function that puts a file into the Turbo C++ editor.
 //   code === null  -> brand-new empty file
@@ -2960,17 +3032,14 @@ async function openCodeInEditor(name, code) {
   setBusyText("Opening " + name + " in Turbo C++...");
   await openFileInEditor(name);              // F3: switches to the window if open, else loads / creates it
 
-  if (alreadyOpen && !isNew) {
-    // Window may be empty/old/edited: wipe it and read the fresh code from disk
+    if (alreadyOpen && !isNew) {
     await delay(100);
     setBusyText("Loading the code...");
     await clearEditorWindow();
     await readFileIntoEditor(name);
-  } else {
-    // First time: zoom the new window (F5 toggles, so only do it once)
-    await delay(100);
-    await pressDosKey(KBD.F5, false, 25, 80);
   }
+  await ensureZoomed(!alreadyOpen || isNew);   // always leave the window full-size
+  
   openedInEditor.add(name);
   setCurrentFile(name);
   baselineCode = isNew ? "" : code;
@@ -4723,6 +4792,50 @@ if ("serviceWorker" in navigator) {
   build();
   var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(build, 200); });
 
+})();
+</script>
+
+<script>
+(function () {
+  const KEY = "tc_bar_tour_done";
+  const root = document.getElementById("bar-tour");
+  const spot = document.getElementById("bar-tour-spot");
+  const card = document.getElementById("bar-tour-card");
+  let open = false, raf = 0;
+
+  function seen() { try { return !!localStorage.getItem(KEY); } catch (e) { return false; } }
+
+  function place() {
+    if (!open) return;
+    const bar = document.getElementById("direct-actions-panel");
+    const r = bar.getBoundingClientRect(), pad = 4;
+    spot.style.left = (r.left - pad) + "px";
+    spot.style.top = (r.top - pad) + "px";
+    spot.style.width = (r.width + pad * 2) + "px";
+    spot.style.height = (r.height + pad * 2) + "px";
+    const cw = card.offsetWidth, ch = card.offsetHeight;
+    let top = r.bottom + 16;
+    if (top + ch > window.innerHeight - 8) top = Math.max(8, r.top - ch - 16);
+    card.style.top = top + "px";
+    card.style.left = Math.max(12, Math.min(r.left + 10, window.innerWidth - cw - 12)) + "px";
+    raf = requestAnimationFrame(place);
+  }
+
+  window.showBarTour = function () {
+    if (open || seen()) return;
+    open = true;
+    root.style.display = "block";
+    const bar = document.getElementById("direct-actions-panel");
+    try { bar.scrollIntoView({ block: "center" }); } catch (e) {}
+    place();
+  };
+
+  document.getElementById("bar-tour-ok").addEventListener("click", () => {
+    try { localStorage.setItem(KEY, "1"); } catch (e) {}
+    open = false;
+    cancelAnimationFrame(raf);
+    root.style.display = "none";
+  });
 })();
 </script>
   
