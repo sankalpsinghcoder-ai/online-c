@@ -1861,6 +1861,17 @@ body.is-fullscreen canvas { top: var(--fs-bar-h) !important; bottom: 0 !importan
 }
 .bt-title { font-family:var(--font-mono); font-weight:700; color:var(--cyan-accent); font-size:1rem; }
 .bt-text { font-size:.88rem; line-height:1.5; color:#fff; }
+
+body.classic-mode .dos-shield { display: none !important; }
+body.classic-mode .touch-btn:not(#tb-paste):not(#tb-switch) { display: none !important; }
+
+#emulator-card.flip { animation: cardFlip .6s ease-in-out; }
+@keyframes cardFlip {
+  0%     { transform: perspective(1200px) rotateY(0); }
+  50%    { transform: perspective(1200px) rotateY(90deg); }
+  50.01% { transform: perspective(1200px) rotateY(-90deg); }
+  100%   { transform: perspective(1200px) rotateY(0); }
+}
   
 </style>
 </head>
@@ -2005,6 +2016,7 @@ body.is-fullscreen canvas { top: var(--fs-bar-h) !important; bottom: 0 !importan
     </button>
     <!-- Top Right Saved Programs -->
     <button type="button" class="tool-btn" id="btn-open-saved">💾 My Saved Programs</button>
+    <button type="button" class="tool-btn" id="btn-mode">🔄 <span>Switch to Classic (Menu)</span></button>
   </div>
 
   <!-- Start Emulator Button -->
@@ -3295,6 +3307,8 @@ async function actDownload() { await openDownloadDialog(); }
 
 function actPaste() { openModal(); }
 
+function actSwitch() { return switchMode(); }
+
 // id      : button id is "tb-" + id (or "dom" if given)
 // busy    : text of the "Please wait" popup. Give it to anything that sends many keys.
 // needsFile: button does nothing until a file is open
@@ -3310,11 +3324,13 @@ const ACTIONS = [
   { id: "clear",    icon: "🧹", label: "Clear",    needsFile: true, busy: "Clearing the editor...", run: actClear },
   { id: "undo",     icon: "↩️", label: "Undo",     needsFile: true, run: actUndo },
   { id: "redo",     icon: "↪️", label: "Redo",     needsFile: true, run: actRedo },
-  { id: "download", icon: "⬇️", label: "Download", needsFile: true, busy: "Reading your code...", run: actDownload }
+  { id: "download", icon: "⬇️", label: "Download", needsFile: true, busy: "Reading your code...", run: actDownload },
+  { id: "switch", icon: "🔄", label: "Classic", direct: true, run: actSwitch }
 ];
 const ACTION_BY_ID = {};
 
 function runAction(a) {
+  if (a.direct) { if (!ensureCompilerStarted()) return; return a.run(); }
   if (!ensureCompilerStarted()) return;
   if (a.needsFile && !lastDosFilename) { showToast("Tap New or Open first."); return; }
   return exclusive(a.busy || null, a.run);
@@ -3358,6 +3374,7 @@ function isLockedKey(e) {
 }
 
 window.addEventListener("keydown", (e) => {
+  if (document.body.classList.contains("classic-mode")) return;
   if (isLockedKey(e)) { e.preventDefault(); e.stopImmediatePropagation(); return; }
   // F2 (habit!) goes through our Save so the code is also kept in the browser
   if (e.key === "F2" && !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey) {
@@ -3727,7 +3744,7 @@ document.getElementById("saved-inject-btn").addEventListener("click", async () =
   }, { passive: true, capture: true });
   dosBox.addEventListener("touchend", (e) => {
     if (moved || !dosCi || isBusy()) return;
-    if (e.cancelable) e.preventDefault();     // cancels the fake click that used to close the keyboard
+    if (e.cancelable && !document.body.classList.contains("classic-mode")) e.preventDefault();     // cancels the fake click that used to close the keyboard
     openKeyboard();
   }, { passive: false, capture: true });
   dosBox.addEventListener("click", (e) => {
@@ -4902,6 +4919,61 @@ if ("serviceWorker" in navigator) {
     hideTour();
   });
 })();
+</script>
+
+<script>
+let classicMode = false;
+
+function updateModeButtons() {
+  const t = document.querySelector("#btn-mode span");
+  if (t) t.textContent = classicMode ? "Switch to New Version" : "Switch to Classic (Menu)";
+  const b = document.getElementById("tb-switch");
+  if (b) b.textContent = classicMode ? "✨ New Version" : "🔄 Classic";
+}
+
+async function switchMode() {
+  if (actionBusy) { showToast("Please wait, an action is still running..."); return; }
+  const toClassic = !classicMode;
+  if (toClassic) {
+    let warned = false;
+    try { warned = !!localStorage.getItem("tc_classic_warned"); } catch (e) {}
+    if (!warned) {
+      if (!confirm("Classic mode shows the original Turbo C++ menu bar.\n\nIt can freeze more easily, and the buttons are mostly disabled. Alt+X quits Turbo C++ and needs a page reload.\n\nContinue?")) return;
+      try { localStorage.setItem("tc_classic_warned", "1"); } catch (e) {}
+    }
+  }
+
+  actionBusy = true;
+  emulatorCard.classList.remove("flip");
+  void emulatorCard.offsetWidth;
+  emulatorCard.classList.add("flip");
+  await delay(300);                               // the card is edge-on: swap modes now
+
+  try {
+    clearKeyMatrix();
+    if (!toClassic) { focusDos(); await dosEscapeAll(); }   // close any open menu or dialog
+    classicMode = toClassic;
+    document.body.classList.toggle("classic-mode", toClassic);
+    updateModeButtons();
+    if (toClassic) focusDos();
+  } finally {
+    actionBusy = false;
+  }
+
+  await delay(300);
+  emulatorCard.classList.remove("flip");
+
+  if (!toClassic) {
+    setCurrentFile(null);                         // we can't know which file the menu left open
+    runAction(ACTION_BY_ID.new);                  // land in a fresh, known file
+  }
+}
+
+document.getElementById("btn-mode").addEventListener("click", () => {
+  if (!ensureCompilerStarted()) return;
+  switchMode();
+});
+updateModeButtons();
 </script>
   
 </body>
