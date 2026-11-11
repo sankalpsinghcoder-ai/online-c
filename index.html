@@ -2724,7 +2724,7 @@ function ensureWorkspace() {
     } finally {
       bootOverlay = false;
       if (ownBusy && !actionBusy) hideBusy();
-      if (window.showBarTour) setTimeout(window.showBarTour, 400);
+      if (window.showBarTour) setTimeout(window.showBarTour, 1500);
     }
   })();
   return wsPromise;
@@ -4801,12 +4801,14 @@ if ("serviceWorker" in navigator) {
   const root = document.getElementById("bar-tour");
   const spot = document.getElementById("bar-tour-spot");
   const card = document.getElementById("bar-tour-card");
-  let open = false, raf = 0;
+  const pop  = document.getElementById("center-popup-overlay");
+  let wanted = false, shown = false, raf = 0;
 
   function seen() { try { return !!localStorage.getItem(KEY); } catch (e) { return false; } }
+  function popupOpen() { return pop && pop.classList.contains("show"); }
 
   function place() {
-    if (!open) return;
+    if (!shown) return;
     const bar = document.getElementById("direct-actions-panel");
     const r = bar.getBoundingClientRect(), pad = 4;
     spot.style.left = (r.left - pad) + "px";
@@ -4821,20 +4823,37 @@ if ("serviceWorker" in navigator) {
     raf = requestAnimationFrame(place);
   }
 
+  function hideTour() {
+    shown = false;
+    cancelAnimationFrame(raf);
+    root.style.display = "none";
+  }
+
+  function sync() {                       // show the tour only when wanted AND no popup is open
+    if (wanted && !seen() && !popupOpen()) {
+      if (shown) return;
+      shown = true;
+      root.style.display = "block";
+      try { document.getElementById("direct-actions-panel").scrollIntoView({ block: "center" }); } catch (e) {}
+      place();
+    } else if (shown) {
+      hideTour();                         // paused, not dismissed: it comes back later
+    }
+  }
+
   window.showBarTour = function () {
-    if (open || seen()) return;
-    open = true;
-    root.style.display = "block";
-    const bar = document.getElementById("direct-actions-panel");
-    try { bar.scrollIntoView({ block: "center" }); } catch (e) {}
-    place();
+    if (seen()) return;
+    wanted = true;
+    sync();
   };
+
+  // Re-check whenever an announcement popup opens or closes
+  if (pop) new MutationObserver(() => setTimeout(sync, 150)).observe(pop, { attributes: true, attributeFilter: ["class"] });
 
   document.getElementById("bar-tour-ok").addEventListener("click", () => {
     try { localStorage.setItem(KEY, "1"); } catch (e) {}
-    open = false;
-    cancelAnimationFrame(raf);
-    root.style.display = "none";
+    wanted = false;
+    hideTour();
   });
 })();
 </script>
