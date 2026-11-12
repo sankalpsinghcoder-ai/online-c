@@ -588,7 +588,56 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .busy-title { font-size: 1.1rem; font-weight: 700; color: var(--cyan-accent); }
   .busy-text { font-size: 0.85rem; color: var(--text-bright); font-family: var(--font-mono); min-height: 1.2em; }
   .busy-note { font-size: 0.75rem; color: #8c979a; line-height: 1.4; }
+    /* ---- Freeze all buttons while any process is running ---- */
+  body.is-busy .touch-btn,
+  body.is-working .touch-btn,
+  body.is-busy .tool-btn,
+  body.is-working .tool-btn,
+  body.is-busy .btn-inject,
+  body.is-working .btn-inject,
+  body.is-busy .btn-cancel,
+  body.is-working .btn-cancel,
+  body.is-busy .modal-close-btn,
+  body.is-working .modal-close-btn {
+    pointer-events: none !important;
+    opacity: 0.45 !important;
+    filter: grayscale(1);
+    cursor: not-allowed;
+  }
 
+    /* ---- Report Bug button (top-right of the middle box) ---- */
+  .main-wrapper { position: relative; }
+  #btn-report-bug {
+    position: absolute; top: 8px; right: 12px; z-index: 50;
+    background: rgba(255, 90, 90, 0.12); color: #ff9a9a;
+    border: 1px solid #ff6b6b; border-radius: 8px;
+    padding: 7px 12px; font-family: var(--font-mono);
+    font-size: 0.78rem; font-weight: 700; cursor: pointer;
+    animation: bugGlow 1.8s ease-in-out infinite;
+  }
+  #btn-report-bug:hover { background: rgba(255, 90, 90, 0.25); }
+  @keyframes bugGlow {
+    0%, 100% { box-shadow: 0 0 6px rgba(255,90,90,.4), 0 0 14px rgba(255,90,90,.2); }
+    50%      { box-shadow: 0 0 14px rgba(255,90,90,.9), 0 0 30px rgba(255,90,90,.5); }
+  }
+  @media (max-width: 640px) {
+    #btn-report-bug { position: static; align-self: flex-end; margin-bottom: 8px; }
+  }
+  body.is-fullscreen #btn-report-bug { display: none; }
+
+    /* ---- Output button turns into a glowing "Go Back" while the Output screen is showing ---- */
+  #tb-userscreen.go-back-glow {
+    background: rgba(255, 193, 7, 0.20) !important;
+    color: #ffd54f !important;
+    border: 1px solid #ffc107 !important;
+    font-weight: 800 !important;
+    animation: goBackGlow 1.2s ease-in-out infinite;
+  }
+  @keyframes goBackGlow {
+    0%, 100% { box-shadow: 0 0 6px rgba(255,193,7,.45), 0 0 14px rgba(255,193,7,.25); }
+    50%      { box-shadow: 0 0 16px rgba(255,193,7,.95), 0 0 34px rgba(255,193,7,.6); }
+  }
+  
   #download-modal { z-index: 1000010; }
   #download-modal .filename-input { text-transform: none; width: auto; max-width: 100%; }
   
@@ -1979,6 +2028,26 @@ body.is-fullscreen canvas { top: var(--fs-bar-h) !important; bottom: 0 !importan
   </div>
 </div>
 
+<!-- Report Bug / Issue dialog (same list as Problems & Bugs) -->
+<div class="full-chat-modal" id="bug-modal">
+  <div class="full-chat-box">
+    <div class="panel-head">
+      <span class="panel-title">🐞 Report Bug / Issue</span>
+      <button type="button" class="panel-close" id="bug-close" style="display:block;">&times;</button>
+    </div>
+    <div style="padding:10px 14px;font-size:.8rem;color:#ff9a9a;border-bottom:1px solid var(--border-color);">
+      Please write the bug / issue you are facing, in your own language. No username needed.
+    </div>
+    <div class="chat-messages" id="bug-messages" style="flex:1;"></div>
+    <form class="chat-compose" id="bug-form" autocomplete="off">
+      <div class="chat-row" style="align-items:flex-end;">
+        <textarea id="bug-input" rows="1" maxlength="300" placeholder="Describe the bug/issue here... (Enter to send)"></textarea>
+        <button type="submit" class="chat-send" style="height:38px;">Send</button>
+      </div>
+    </form>
+  </div>
+</div>
+  
 <!-- Middle of Website Popup Notification Dialog -->
 <div class="center-popup-overlay" id="center-popup-overlay">
   <div class="center-popup-card">
@@ -1998,6 +2067,7 @@ body.is-fullscreen canvas { top: var(--fs-bar-h) !important; bottom: 0 !importan
 <div class="panel-backdrop" id="panel-backdrop"></div>
 
 <main class="main-wrapper">
+    <button type="button" id="btn-report-bug">Report Bug/Issue</button>
     <div class="anniv-title">Happy 1st Anniversary Week!</div>
     <div class="anniv-sub">This website was made on <b>10 NOV, 2025</b></div>
    
@@ -2151,7 +2221,7 @@ void main() {
         <input type="text" id="save-list-filename" class="filename-input" value="MYPROG.CPP" style="width:160px;">
       </div>
       <div class="modal-filename-group" style="flex-direction:column;align-items:stretch;">
-  <div class="filename-label">Description (what does this program do?)</div>
+  <div class="filename-label">Description (Optional, you can leave it empty)</div>
   <textarea id="save-list-desc" class="code-textarea" maxlength="200"
     style="height:80px;white-space:pre-wrap;font-family:var(--font-sans);"
     placeholder="e.g. Prime number checker using a loop"></textarea>
@@ -2216,7 +2286,7 @@ void main() {
   <div id="bar-tour">
   <div id="bar-tour-spot"></div>
   <div id="bar-tour-card">
-    <div class="bt-title">You can control the compiler from here also!</div>
+    <div class="bt-title">👆 You can control the compiler from here also!</div>
     <div class="bt-text">Use this button bar to <b>Open</b> saved programs, <b>Save</b>, <b>Run</b>, view <b>Output</b>, <b>Clear</b> and <b>Download</b>. The <b>File</b> and <b>Run</b> menu inside the compiler are connected to these same buttons, so they work the same way.</div>
     <button type="button" id="bar-tour-ok" class="btn-inject" style="margin-left:auto;">Got it</button>
   </div>
@@ -2901,6 +2971,7 @@ if (busyOverlay) {
 async function exclusive(message, fn) {
   if (actionBusy) { showToast("Please wait, the previous action is still running..."); return false; }
   actionBusy = true;
+  document.body.classList.add("is-working");
   if (message) showBusy(message);
   try {
     await ensureWorkspace();
@@ -2912,6 +2983,7 @@ async function exclusive(message, fn) {
     return false;
   } finally {
     actionBusy = false;
+    document.body.classList.remove("is-working");
     clearKeyMatrix();
     if (message) hideBusy();
   }
@@ -3001,13 +3073,22 @@ async function readCurrentFile() {
   await prepDos();
   await pressDosKey(KBD.F2, false, 25, 300);
 
+  if (window.__answerYes) { await delay(200); await window.__answerYes(); }
+
   const isNoname = /^NONAME\d+\.CPP$/i.test(lastDosFilename);
   let dlg = await isDialogOpen();
   if (!dlg && isNoname) { await delay(400); dlg = await isDialogOpen(); }
 
   if (dlg || (isNoname && dlg === null)) {
-    // press Enter (OK), and again if an "overwrite?" question follows
-    await pressDosKey(KBD.ENTER, false, 25, 600);
+    if (isNoname) {
+      // Save As dialog: Enter = OK
+      await pressDosKey(KBD.ENTER, false, 25, 600);
+    } else {
+      // "Date/time of disk file has changed" warning: focus is on No,
+      // so Shift+Tab moves to Yes, then Enter confirms the overwrite
+      await pressDosKey(KBD.TAB, true, 25, 150);
+      await pressDosKey(KBD.ENTER, false, 25, 600);
+    }
     for (let i = 0; i < 2 && await isDialogOpen(); i++) {
       await pressDosKey(KBD.ENTER, false, 25, 600);
     }
@@ -3020,7 +3101,11 @@ async function readCurrentFile() {
     catch (e) { lastErr = e; await delay(250); }
   }
   if (!bytes) throw lastErr || new Error("Could not read " + lastDosFilename);
-  return new TextDecoder("utf-8").decode(bytes);
+  const txt = new TextDecoder("utf-8").decode(bytes);
+  if (!/^NONAME\d+\.CPP$/i.test(lastDosFilename) && txt.trim()) {
+    try { localStorage.setItem("tc_last_session", JSON.stringify({ name: lastDosFilename, code: txt })); } catch (e) {}
+  }
+  return txt;
 }
 
   
@@ -3134,6 +3219,7 @@ async function openCodeInEditor(name, code) {
   openedInEditor.add(name);
   setCurrentFile(name);
   baselineCode = isNew ? "" : code;
+  try { localStorage.setItem("tc_last_session", JSON.stringify({ name: name, code: isNew ? "" : code })); } catch (e) {}
   clearKeyMatrix();
 }
 
@@ -3322,7 +3408,7 @@ function actOpen() {                        // opens "My Saved Programs"
 
 async function actSaveAs() {
   const text = await readCurrentFile();
-  if (!text || !text.trim()) { showToast("Editor is empty, nothing to save!"); return; }
+  if (text === null || text === undefined) { showToast("Open or create a file first."); return; }
   const old = readSavedList().find((x) => x.name === lastDosFilename);
   saveListCode.value = text;
   saveListFilename.value = lastDosFilename;
@@ -3539,7 +3625,7 @@ async function openDownloadDialog() {
   showToast("Grabbing code from compiler...");
   let text = null;
   try { text = await readCurrentFile(); } catch (e) { console.error(e); }
-  if (!text || !text.trim()) { showToast("Workspace is empty, nothing to download!"); return; }
+  if (text === null || text === undefined) { showToast("Open or create a file first."); return; }
 
   dlCode.value = text;
   const base = lastDosFilename || "CODE.CPP";
@@ -3618,7 +3704,6 @@ document.getElementById("save-confirm-btn").addEventListener("click", async () =
   const desc = document.getElementById("save-list-desc").value.trim();
   const code = saveListCode.value;
   if (!saveListFilename.value.trim()) { showToast("Please enter a file name."); return; }
-  if (!desc) { showToast("Please write a short description."); return; }
   if (!saveToBrowserList(fName, code, desc)) return;
   closeSaveModals();
   if (fName === lastDosFilename) { showToast("Saved " + fName); return; }
@@ -3641,22 +3726,49 @@ function showSavedPreview(prog, focusDesc) {
 }
 
 
-async function renameSaved(prog) {
-  const raw = prompt("New file name (max 8 letters + extension):", prog.name);
-  if (raw === null) return;
-  const nn = getSanitizedFilename(raw);
-  if (nn === prog.name) return;
-  const list = readSavedList();
-  if (list.some((x) => x.name === nn)) { showToast("A saved file named " + nn + " already exists."); return; }
-  const item = list.find((x) => x.name === prog.name);
-  if (!item) return;
-  const old = item.name;
-  item.name = nn;
-  try { localStorage.setItem("tc_saved_programs", JSON.stringify(list)); }
-  catch (e) { showToast("Could not save the new name."); return; }
-  if (dosCi && old !== lastDosFilename) { try { await dosCi.fsDeleteFile(old); } catch (e) {} }
-  showToast("Renamed to " + nn);
-  renderSavedList();
+function renameSaved(prog, nameRow) {
+  if (nameRow.querySelector(".rename-input")) return;
+  nameRow.innerHTML = "";
+  nameRow.addEventListener("click", (e) => e.stopPropagation());   // don't open the preview
+
+  const form = document.createElement("form");
+  form.style.cssText = "display:flex;align-items:center;gap:6px;flex-wrap:wrap;";
+
+  const inp = document.createElement("input");
+  inp.type = "text";
+  inp.className = "filename-input rename-input";
+  inp.value = prog.name;
+  inp.maxLength = 12;
+  inp.autocomplete = "off";
+  inp.spellcheck = false;
+  inp.style.cssText = "width:150px;";
+
+  const ok = document.createElement("button");
+  ok.type = "submit"; ok.className = "change-name-btn"; ok.textContent = "✔ Save";
+  const no = document.createElement("button");
+  no.type = "button"; no.className = "change-name-btn"; no.textContent = "✕ Cancel";
+  no.addEventListener("click", () => renderSavedList());
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const nn = getSanitizedFilename(inp.value);
+    if (nn === prog.name) { renderSavedList(); return; }
+    const list = readSavedList();
+    if (list.some((x) => x.name === nn)) { showToast("A saved file named " + nn + " already exists."); inp.focus(); return; }
+    const item = list.find((x) => x.name === prog.name);
+    if (!item) { renderSavedList(); return; }
+    const old = item.name;
+    item.name = nn;
+    try { localStorage.setItem("tc_saved_programs", JSON.stringify(list)); }
+    catch (err) { showToast("Could not save the new name."); return; }
+    if (dosCi && old !== lastDosFilename) { try { await dosCi.fsDeleteFile(old); } catch (err) {} }
+    showToast("Renamed to " + nn);
+    renderSavedList();
+  });
+
+  form.append(inp, ok, no);
+  nameRow.appendChild(form);
+  inp.focus(); inp.select();
 }
   
 function renderSavedList() {
@@ -3683,7 +3795,7 @@ function renderSavedList() {
     ren.type = "button";
     ren.className = "change-name-btn";
     ren.textContent = "✏️ Rename";
-    ren.addEventListener("click", (e) => { e.stopPropagation(); renameSaved(prog); });
+    ren.addEventListener("click", (e) => { e.stopPropagation(); renameSaved(prog, nameRow); });
     nameRow.appendChild(ren);
     left.appendChild(nameRow);
 
@@ -3722,7 +3834,6 @@ document.getElementById("btn-open-saved").addEventListener("click", () => {
 
 document.getElementById("saved-desc-btn").addEventListener("click", () => {
   const d = document.getElementById("saved-preview-desc").value.trim();
-  if (!d) { showToast("Please write a description first."); return; }
   if (saveToBrowserList(currentPreviewingProgram.name, currentPreviewingProgram.code, d)) {
     currentPreviewingProgram.desc = d;
     renderSavedList();
@@ -4421,7 +4532,7 @@ if ("serviceWorker" in navigator) {
   }
 
   function createMsgElement(m, key, currentRef) {
-    const isMine = (m.name && m.name.toLowerCase() === myUsername);
+    const isMine = (m.name && (m.name.toLowerCase() === myUsername || m.name.toLowerCase() === getBugName()));
     const wrap = document.createElement("div");
     wrap.className = "chat-msg" + (isMine ? " mine" : "");
     wrap.id = "msg-" + key;
@@ -4555,6 +4666,90 @@ if ("serviceWorker" in navigator) {
     fullInput.value = "";
     fullInput.style.height = "auto";
     if (isProb) setTimeout(() => loadTab("problems"), 300);
+  });
+
+    // ==========================================================================
+  // REPORT BUG / ISSUE (no username: a permanent random name stays in this browser)
+  // ==========================================================================
+  
+    // Permanent random name for bug reports, reserved in /usernames like a normal chat user.
+  // Nothing is asked from the visitor, and your Firebase rules stay unchanged.
+  let bugNameReady = null;
+
+  function getBugName() {                       // quick, synchronous: what's stored in this browser
+    try { return localStorage.getItem("tc_bug_anon_name") || ""; } catch (e) { return ""; }
+  }
+
+  function ensureBugName() {                    // claims a free name once, then re-uses it forever
+    if (bugNameReady) return bugNameReady;
+    bugNameReady = (async () => {
+      const existing = getBugName();
+      if (existing) return existing;
+      for (let i = 0; i < 6; i++) {
+        const cand = "guest_" + Math.random().toString(36).slice(2, 8);
+        try {
+          const res = await usersRef.child(cand).transaction((cur) =>
+            cur === null ? { claimedAt: Date.now(), anon: true } : undefined);
+          if (res.committed) {
+            try { localStorage.setItem("tc_bug_anon_name", cand); } catch (e) {}
+            return cand;
+          }
+        } catch (e) { break; }                  // offline / blocked: stop trying
+      }
+      return "";
+    })();
+    bugNameReady.then((n) => { if (!n) bugNameReady = null; });   // allow a retry on the next report
+    return bugNameReady;
+  }
+  const bugModal = document.getElementById("bug-modal");
+  const bugMsgs  = document.getElementById("bug-messages");
+  const bugForm  = document.getElementById("bug-form");
+  const bugInput = document.getElementById("bug-input");
+
+  function loadBugs() {
+    bugMsgs.innerHTML = "";
+    problemsRef.once("value", (snap) => {
+      snap.forEach((child) => {
+        bugMsgs.appendChild(createMsgElement(child.val(), child.key, problemsRef));
+      });
+      bugMsgs.scrollTop = bugMsgs.scrollHeight;
+    });
+  }
+
+  document.getElementById("btn-report-bug").addEventListener("click", () => {
+    bugModal.classList.add("open");
+    loadBugs();
+  });
+  document.getElementById("bug-close").addEventListener("click", () => bugModal.classList.remove("open"));
+  bugModal.addEventListener("click", (e) => { if (e.target === bugModal) bugModal.classList.remove("open"); });
+  problemsRef.on("child_removed", (snap) => {
+    const el = bugMsgs.querySelector("#msg-" + snap.key);
+    if (el) el.remove();
+  });
+
+  setupTextarea(bugInput, bugForm);
+  bugForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const text = bugInput.value.trim();
+    if (!text) return;
+    const name = await ensureBugName();
+    if (!name) { alert("Could not send right now. Please check your internet connection and try again."); return; }
+    const pushed = problemsRef.push({
+      name: name,
+      text: text.slice(0, 300),
+      ts: firebase.database.ServerValue.TIMESTAMP
+    });
+    pushed.then(() => {
+      fetch(NOTIFY_URL, {                       // same notification that reaches you for Problems & Bugs
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: pushed.key, ref: "problems" }),
+        keepalive: true
+      }).catch(() => {});
+    }).catch((err) => console.warn("Send error:", err));
+    bugInput.value = "";
+    bugInput.style.height = "auto";
+    setTimeout(loadBugs, 300);
   });
 
   // ==========================================================================
@@ -5169,7 +5364,7 @@ if ("serviceWorker" in navigator) {
     };
   }
   function ours(e) {
-    return FS_MOUSE_FIX && inFs() && dosCi && e.pointerType === "mouse" && dosBox.contains(e.target);
+     return FS_MOUSE_FIX && dosCi && e.pointerType === "mouse" && dosBox.contains(e.target);
   }
   function move(e) {
     const p = mapped(e); if (!p) return;
@@ -5194,6 +5389,187 @@ if ("serviceWorker" in navigator) {
     move(e);
     try { dosCi.sendMouseButton(e.button === 2 ? 2 : e.button === 1 ? 1 : 0, false); } catch (x) {}
   }, true);
+})();
+</script>
+
+<script>
+// ===== Re-open the last file on the next visit =====
+(function () {
+  const KEY = "tc_last_session";
+  const AUTO_SAVE = false;        // false = remember only when a file is opened
+  const IDLE_MS = 1000;          // save 1 second after you stop typing
+  const MAX_MS  = 5000;          // ...and at least every 5 seconds while you keep typing
+  let idleTimer = null, maxTimer = null, saving = false;
+
+
+    // True if the "Date/time of disk file has changed" box is on screen.
+  // Checks 5 spots in the grey lower part of that box (they are blue in the plain editor).
+  async function warnOpen() {
+    try {
+      if (!dosCi || typeof dosCi.screenshot !== "function") return null;
+      const img = await dosCi.screenshot();
+      if (!img || !img.data) return null;
+      const pts = [[0.28, 0.63], [0.33, 0.63], [0.45, 0.63], [0.58, 0.63], [0.73, 0.63]];
+      let grey = 0;
+      for (const [fx, fy] of pts) {
+        const i = (Math.floor(img.height * fy) * img.width + Math.floor(img.width * fx)) * 4;
+        if (Math.abs(img.data[i] - 170) < 25 && Math.abs(img.data[i + 1] - 170) < 25 && Math.abs(img.data[i + 2] - 170) < 25) grey++;
+      }
+      return grey >= 4;
+    } catch (e) { return null; }
+  }
+
+  // Answers the warning with "Yes". Tries up to 3 ways until it is gone.
+  async function answerYes() {
+    const tries = [
+      async () => { await pressDosKey(KBD.TAB, true, 25, 150); await pressDosKey(KBD.ENTER, false, 25, 500); }, // Shift+Tab to Yes, Enter
+      async () => { await pressDosKey(89, false, 25, 500); },                                                     // the letter Y
+      async () => { await pressDosKey(KBD.LEFT || 263, false, 25, 150); await pressDosKey(KBD.ENTER, false, 25, 500); }
+    ];
+    for (const t of tries) {
+      if (await warnOpen() !== true) return;
+      await t();
+      await delay(200);
+    }
+  }
+
+  // Lean snapshot: only F2 (save) + read the file. No Escape, no key release, no popup.
+    // Shows a still picture of the compiler on top, so nothing happening underneath is visible
+  async function freezeFrame() {
+    try {
+      const c = dosBox.querySelector("canvas");
+      if (!c || !dosCi || typeof dosCi.screenshot !== "function") return null;
+      const img = await dosCi.screenshot();
+      if (!img || !img.data) return null;
+      const ov = document.createElement("canvas");
+      ov.width = img.width; ov.height = img.height;
+      ov.getContext("2d").putImageData(new ImageData(new Uint8ClampedArray(img.data), img.width, img.height), 0, 0);
+      const r = c.getBoundingClientRect();
+      ov.style.cssText = "position:fixed;z-index:150;pointer-events:none;" +
+        "left:" + r.left + "px;top:" + r.top + "px;width:" + r.width + "px;height:" + r.height + "px;";
+      document.body.appendChild(ov);
+      return ov;
+    } catch (e) { return null; }
+  }
+
+  async function snapshot() {
+    if (!AUTO_SAVE || saving || !dosCi || !lastDosFilename) return;
+    if (/^NONAME\d+\.CPP$/i.test(lastDosFilename)) return;     // F2 would open a Save-As dialog
+    if (actionBusy || isBusy() || document.hidden || editorOnScreen !== true) return;
+    if (document.querySelector(".modal-backdrop.visible, .full-chat-modal.open")) return;
+    if (Date.now() < (window.__tcQuietUntil || 0)) return;
+    saving = true; actionBusy = true;
+    const name = lastDosFilename;
+    const cover = await freezeFrame();                         // hides the dialog from the user
+    try {
+      await answerYes();                                       // in case the warning is already open
+      await pressDosKey(KBD.F2, false, 25, 150);
+      await delay(250);                                        // the box takes a moment to appear
+      await answerYes();
+      const bytes = await readDosFile(name);
+      if (bytes && lastDosFilename === name) {
+        localStorage.setItem(KEY, JSON.stringify({
+          name: name,
+          code: new TextDecoder("utf-8").decode(bytes)
+        }));
+      }
+    } catch (e) {
+    } finally {
+      await delay(150);
+      if (cover) cover.remove();
+      actionBusy = false; saving = false;
+    }
+  }
+
+  window.__answerYes = answerYes;
+
+  function runNow() {
+    clearTimeout(idleTimer); clearTimeout(maxTimer);
+    idleTimer = maxTimer = null;
+    snapshot();
+  }
+  window.addEventListener("keydown", () => {
+    if (!lastDosFilename) return;
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(runNow, IDLE_MS);
+    if (!maxTimer) maxTimer = setTimeout(runNow, MAX_MS);
+  }, true);
+
+  async function restore() {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
+    if (!s || !s.name || lastDosFilename) return;
+    await exclusive("Restoring " + s.name + "...", () => openCodeInEditor(s.name, s.code || ""));
+  }
+
+  // wait until the emulator and workspace are ready, then re-open the last file
+  const wait = setInterval(() => {
+    if (!dosCi || !wsPromise) return;
+    clearInterval(wait);
+    wsPromise.then(() => setTimeout(restore, 300));
+  }, 300);
+})();
+</script>
+
+<script>
+// ===== Output button -> glowing "Go Back" while the Output screen is showing =====
+(function () {
+  const btn = document.getElementById("tb-userscreen");
+  if (!btn) return;
+  let seenEditor = false, showingBack = false, normalHTML = "";
+
+  function update() {
+    if (typeof editorOnScreen === "undefined") return;
+    if (editorOnScreen === true) seenEditor = true;          // the editor has been seen at least once
+    const broken = typeof screenFails !== "undefined" && screenFails >= 3;   // screen reading failed: stay normal
+    const onOutput = !!dosCi && seenEditor && !broken && editorOnScreen === false;
+    if (onOutput === showingBack) return;
+    showingBack = onOutput;
+    if (onOutput) {
+      normalHTML = btn.innerHTML;                            // remember "icon Output (Alt+F5)"
+      btn.textContent = "Go Back";                           // no emoji
+      btn.classList.add("go-back-glow");
+    } else {
+      btn.innerHTML = normalHTML;
+      btn.classList.remove("go-back-glow");
+    }
+  }
+  setInterval(update, 300);
+})();
+</script>
+
+
+<script>
+// Tab-return guard: release stuck keys and close stray menus/dialogs
+(function () {
+  let hiddenAt = 0;
+  const MODS = [KBD.LSHIFT, KBD.RSHIFT, KBD.LCTRL, KBD.RCTRL, KBD.LALT, KBD.RALT];
+
+  function releaseAll() {
+    if (!dosCi) return;
+    MODS.forEach((k) => { try { dosCi.sendKeyEvent(k, false); } catch (e) {} });
+    clearKeyMatrix();
+  }
+
+  async function resync() {
+    if (!dosCi || actionBusy || isBusy()) return;
+    window.__tcQuietUntil = Date.now() + 4000;   // autosave stays quiet meanwhile
+    actionBusy = true;
+    try {
+      releaseAll();
+      await delay(300);
+      for (let i = 0; i < 2; i++) await pressDosKey(KBD.ESC, false, 20, 80);   // closes any open menu/dialog
+    } finally {
+      actionBusy = false;
+      releaseAll();
+    }
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { hiddenAt = Date.now(); releaseAll(); }
+    else if (Date.now() - hiddenAt > 1500) setTimeout(resync, 400);
+  });
+  window.addEventListener("blur", releaseAll);
 })();
 </script>
   
