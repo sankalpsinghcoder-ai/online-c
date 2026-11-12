@@ -1,6 +1,6 @@
 // service-worker.js
 
-const CACHE_NAME = "turboc-cache-v9";
+const CACHE_NAME = "turboc-cache-v10";
 
 // Only small files are pre-cached. Big files (js-dos, emulators, TURBOC3.zip, turboc.jsdos)
 // are cached automatically the first time they are used, by the fetch handler below.
