@@ -1,0 +1,1 @@
+Copyright (c) 2026 Sankalp Singh. All rights reserved.This source code is public for viewing purposes only. No permission is granted to copy, modify, distribute, or use this code, in whole or in part, for any personal or commercial purpose without explicit written permission from the author.
