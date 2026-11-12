@@ -47,6 +47,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<script>if (window.top !== window.self) { try { window.top.location = window.self.location; } catch (e) { document.documentElement.innerHTML = ""; } }</script>
+  
 <!-- JSON-LD Structured Data: WebApplication + FAQPage for Top Google Ranking -->
 <script type="application/ld+json">
 {
@@ -2475,7 +2477,25 @@ function charToDosKeys(char) {
   return null;
 }
 
-const delay = (ms) => new Promise(res => setTimeout(res, ms));
+// Timer that is NOT slowed down in background tabs (runs in a tiny Web Worker)
+const delay = (() => {
+  let w = null, id = 0;
+  const waits = new Map();
+  try {
+    const src = "onmessage=function(e){var i=e.data[0],ms=e.data[1];setTimeout(function(){postMessage(i)},ms)}";
+    w = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })));
+    w.onmessage = (e) => { const r = waits.get(e.data); if (r) { waits.delete(e.data); r(); } };
+  } catch (e) { w = null; }
+  return (ms) => new Promise((res) => {
+    if (!w) { setTimeout(res, ms); return; }
+    const i = ++id; waits.set(i, res); w.postMessage([i, ms]);
+  });
+})();
+
+// While an action is running, js-dos must not see "tab hidden" (it would pause the emulator)
+document.addEventListener("visibilitychange", (e) => {
+  if (typeof actionBusy !== "undefined" && (actionBusy || (typeof isBusy === "function" && isBusy()))) e.stopImmediatePropagation();
+}, true);
 
 function clearKeyMatrix() {
   if (dosCi && dosCi.keyMatrix) {
@@ -2633,6 +2653,13 @@ startBtn.addEventListener("click", () => {
   function onEmulatorReady(ci) {
     keyboard = { keyPress: (code) => ci.simulateKeyPress(code) };
 
+        // js-dos pauses when the tab is hidden: ignore that while an action runs
+    const realPause = (ci.pause || function () {}).bind(ci);
+    const realResume = (ci.resume || function () {}).bind(ci);
+    if (typeof ci.pause === "function") {
+      ci.pause = function () { if (actionBusy || isBusy()) return; return realPause(); };
+    }
+
     // Prepare the workspace (restore saved files, set C:\ as folder) and start the browser auto-save
     emuReadyAt = Date.now();
     ensureWorkspace();
@@ -2642,9 +2669,9 @@ startBtn.addEventListener("click", () => {
       nudges++;
       if (!document.hidden && document.activeElement !== hiddenInput) {
         try {
-          ci.pause();
+          realPause();
           setTimeout(() => {
-            try { ci.resume(); } catch (e) {}
+            try { realResume(); } catch (e) {}
             window.dispatchEvent(new Event("resize"));
           }, 50);
         } catch (e) {}
@@ -2680,7 +2707,7 @@ let bootOverlay = false;
 
 
 async function isEditorOnScreen() {
-  if (!dosCi || typeof dosCi.screenshot !== "function") return null;
+    if (document.hidden || !dosCi || typeof dosCi.screenshot !== "function") return null;
   try {
     const img = await dosCi.screenshot();
     if (!img || !img.data) return null;
@@ -2956,7 +2983,7 @@ async function readDosFile(name) {
 
 // Is a grey Turbo C++ dialog (Save File As...) on screen? Samples spots that are grey in the dialog.
 async function isDialogOpen() {
-  if (!dosCi || typeof dosCi.screenshot !== "function") return null;
+    if (document.hidden || !dosCi || typeof dosCi.screenshot !== "function") return null;
   try {
     const img = await dosCi.screenshot();
     if (!img || !img.data) return null;
@@ -3049,7 +3076,7 @@ async function fixBgiPath(code) {
 
 // true = editor window fills the screen, false = half open (desktop pattern visible below), null = unknown
 async function isWindowZoomed() {
-  if (!dosCi || typeof dosCi.screenshot !== "function") return null;
+    if (document.hidden || !dosCi || typeof dosCi.screenshot !== "function") return null;
   try {
     const img = await dosCi.screenshot();
     if (!img || !img.data) return null;
@@ -3854,6 +3881,7 @@ document.getElementById("saved-inject-btn").addEventListener("click", async () =
 // INPUT RECOVERY: frees a stuck mouse / keys after output screen or fullscreen
 // ============================================================================
 function recoverInput() {
+  if (typeof actionBusy !== "undefined" && (actionBusy || isBusy())) return;   // never touch keys mid-action
   try { if (document.pointerLockElement) document.exitPointerLock(); } catch (e) {}
   try {
     if (dosCi) {
@@ -4716,16 +4744,17 @@ if ("serviceWorker" in navigator) {
   // 3. PostMessage Bridge for iframe / extension agents
   window.addEventListener("message", async (event) => {
     if (!event.data || event.data.type !== "MCP_REQUEST") return;
+    if (event.origin !== location.origin) return;
     const { id, method, params } = event.data;
     try {
       if (method === "tools/list") {
-        window.postMessage({ type: "MCP_RESPONSE", id, result: { tools: window.modelContext.tools } }, "*");
+        window.postMessage({ type: "MCP_RESPONSE", id, result: { tools: window.modelContext.tools } }, location.origin);
       } else if (method === "tools/call") {
         const out = await window.modelContext.executeTool(params.name, params.arguments);
-        window.postMessage({ type: "MCP_RESPONSE", id, result: out }, "*");
+        window.postMessage({ type: "MCP_RESPONSE", id, result: out }, location.origin);
       }
     } catch (err) {
-      window.postMessage({ type: "MCP_RESPONSE", id, error: err.message }, "*");
+      window.postMessage({ type: "MCP_RESPONSE", id, error: err.message }, location.origin);
     }
   });
 
