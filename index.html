@@ -1996,7 +1996,7 @@ body.is-fullscreen canvas { top: var(--fs-bar-h) !important; bottom: 0 !importan
     </div>
     <div class="change-name-msg" id="change-username-msg"></div>
     <div class="chat-row" style="align-items: flex-end;">
-      <textarea id="chat-input" rows="1" maxlength="300" placeholder="Type a message... (Enter to send)" disabled></textarea>
+      <textarea id="chat-input" rows="1" maxlength="100000" placeholder="Type a message... (Enter to send)" disabled></textarea>
       <button type="submit" class="chat-send" id="chat-send" disabled style="height: 38px;">Send</button>
     </div>
   </form>
@@ -2016,7 +2016,7 @@ body.is-fullscreen canvas { top: var(--fs-bar-h) !important; bottom: 0 !importan
     <div class="chat-messages" id="full-chat-messages" style="flex: 1;"></div>
     <form class="chat-compose" id="full-chat-form" autocomplete="off">
       <div class="chat-row" style="align-items: flex-end;">
-        <textarea id="full-chat-input" rows="1" maxlength="300" placeholder="Type a message... (Enter to send)"></textarea>
+        <textarea id="full-chat-input" rows="1" maxlength="100000" placeholder="Type a message... (Enter to send)"></textarea>
         <button type="submit" class="chat-send" style="height: 38px;">Send</button>
       </div>
     </form>
@@ -2036,7 +2036,7 @@ body.is-fullscreen canvas { top: var(--fs-bar-h) !important; bottom: 0 !importan
     <div class="chat-messages" id="bug-messages" style="flex:1;"></div>
     <form class="chat-compose" id="bug-form" autocomplete="off">
       <div class="chat-row" style="align-items:flex-end;">
-        <textarea id="bug-input" rows="1" maxlength="300" placeholder="Describe the bug/issue here... (Enter to send)"></textarea>
+        <textarea id="bug-input" rows="1" maxlength="100000" placeholder="Describe the bug/issue here... (Enter to send)"></textarea>
         <button type="submit" class="chat-send" style="height:38px;">Send</button>
       </div>
     </form>
@@ -4634,7 +4634,7 @@ if ("serviceWorker" in navigator) {
     const ref = isProblem ? problemsRef : messagesRef;
     const pushed = ref.push({
       name: myUsername,
-      text: text.slice(0, 300),
+      text: text.slice(0, 100000),
       ts: firebase.database.ServerValue.TIMESTAMP
     });
     pushed.then(() => {
@@ -4731,7 +4731,7 @@ if ("serviceWorker" in navigator) {
     if (!name) { alert("Could not send right now. Please check your internet connection and try again."); return; }
     const pushed = problemsRef.push({
       name: name,
-      text: text.slice(0, 300),
+      text: text.slice(0, 100000),
       ts: firebase.database.ServerValue.TIMESTAMP
     });
     pushed.then(() => {
